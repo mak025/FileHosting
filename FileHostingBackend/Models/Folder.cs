@@ -15,19 +15,19 @@ namespace FileHostingBackend.Models
         public string Path { get; set; }
         public Folder? ParentFolder { get; set; }
         public bool Visibility { get; set; }
-        public Union? Union { get; set; }
         public string BucketName { get; set; }
 
         public Folder() { }
 
-        public Folder (string name, string path, Folder parentFolder, Union? union, string bucketName)
+        public Folder (string name, string path, Folder parentFolder, Union? union)
         {
             Id = _tempId++;
             Name = name;
             Path = path;
             ParentFolder = parentFolder;
             Union = union;
-            BucketName = bucketName;
+            
+            
         }
     }
 }
