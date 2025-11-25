@@ -20,7 +20,7 @@ namespace FileHostingBackend.Models
         public DbSet<User> Users { get; set; }
         public DbSet<StoredFileInfo> StoredFiles { get; set; }
         public DbSet<Folder> Folders { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer("Server=localhost;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;");
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer("Server=localhost;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;");
 
     }
 }
