@@ -1,0 +1,41 @@
+version: '4.1'
+
+services:
+  # Database Server MS_SQL <- BS
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql_server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./mssql_data:/var/opt/mssql
+    restart: unless-stopped
+
+
+  # MinIO Service - SFTP File Server S3 Compatible
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web Console
+      - "8022:8022"   # SFTP
+    volumes:
+      - ./minio_data:/data
+      - ./ssh:/root/.ssh:ro
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: >
+      server /data
+      --console-address ":9001"
+      --sftp="address=:8022"
+      --sftp="ssh-private-key=/root/.ssh/id_rsa"
+    restart: unless-stopped
+
+
+volumes:
+  data:
