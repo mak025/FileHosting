@@ -21,7 +21,7 @@ namespace FileHostingBackend.Models
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public Union? Union { get; set; }
-        public int? UnionId { get; set; }
+        public int? UnionId { get; set; } //maybe change when we are setting up DB context scaffolding?
         public UserType Type { get; set; }
 
         public User() { }
