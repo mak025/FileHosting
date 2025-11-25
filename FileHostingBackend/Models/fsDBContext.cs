@@ -7,11 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Models
 {
-    public class fsDBContext : DBContext
+    public class fsDBContext : DbContext
     {
         public fsDBContext() { }
 
         public fsDBContext(DbContextOptions<fsDBContext> options)
+        { 
+        
+        }
 
     }
 }
