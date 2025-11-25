@@ -14,6 +14,7 @@ namespace FileHostingBackend.Models
         public string Path { get; set; }
         public string ParentFolderID { get; set; }
         public bool Visibility { get; set; }
+        public Union? Union { get; set; }
 
         public Folder() { }
         
