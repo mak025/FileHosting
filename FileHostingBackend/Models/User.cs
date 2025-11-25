@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-
+using FileHostingBackend.Models;
 namespace FileHostingBackend.Models
 {
     public abstract class User
@@ -14,24 +15,32 @@ namespace FileHostingBackend.Models
             Member
         }
         private static int _tempId = 0;
-        public int Id { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public int UnionId { get; set; }
+        public Union? Union { get; set; }
+        public int? UnionId { get; set; }
         public UserType Type { get; set; }
 
         public User() { }
 
-        public User(string name, string email, string address, string phoneNumber, int unionID)
+        public User(string name, string email, string address, string phoneNumber, Union? union)
         {
-            Id = _tempId++;
+            ID = _tempId++;
             Name = name;
             Email = email;
             Address = address;
             PhoneNumber = phoneNumber;
-            UnionId = unionID;
+
+            Union = union;
+            UnionId = union?.UnionId; // null means "no union"
+
+            if (union != null && !union.Members.Contains(this))
+            {
+                union.Members.Add(this);
+            }
         }
 
     }
