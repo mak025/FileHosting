@@ -2,12 +2,12 @@
 
 namespace FileHostingBackend.Models
 {
-    public class fsDBContext : DbContext
+    public class FileHostDBContext : DbContext
     {
-        public fsDBContext() { }
+        public FileHostDBContext() { }
 
         // Pass options to the base DbContext so EF and the tools can supply their configured options
-        public fsDBContext(DbContextOptions<fsDBContext> options) : base(options)
+        public FileHostDBContext(DbContextOptions<FileHostDBContext> options) : base(options)
         {
         }
 
