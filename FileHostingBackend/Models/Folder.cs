@@ -19,13 +19,13 @@ namespace FileHostingBackend.Models
 
         public Folder() { }
 
-        public Folder (string name, string path, Folder parentFolder, Union? union)
+        public Folder (string name, string path, Folder parentFolder, string bucketName)
         {
             Id = _tempId++;
             Name = name;
             Path = path;
             ParentFolder = parentFolder;
-            Union = union;
+            BucketName = bucketName;
             
             
         }
