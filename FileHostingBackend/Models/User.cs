@@ -33,7 +33,6 @@ namespace FileHostingBackend.Models
             Email = email;
             Address = address;
             PhoneNumber = phoneNumber;
-
             Union = union;
             UnionId = union?.UnionId; // null means "no union"
 

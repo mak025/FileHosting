@@ -9,7 +9,7 @@ namespace FileHostingBackend.Models
     public class StoredFileInfo
     {
         public string ID { get; set; }
-        public Folder ParentFolder { get; set; }
+        public Folder Folder { get; set; }
         public string Name { get; set; }
         public int Size { get; set; } // Size in bytes
         public DateTime UploadedAt { get; set; }
