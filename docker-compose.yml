@@ -10,8 +10,6 @@ services:
       - SA_PASSWORD=YourStrong!Passw0rd
     ports:
       - "1433:1433"
-    volumes:
-      - ./mssql_data:/var/opt/mssql
     restart: unless-stopped
 
 
@@ -24,8 +22,8 @@ services:
       - "9001:9001"   # Web Console
       - "8022:8022"   # SFTP
     volumes:
-      - ./minio_data:/data
-      - ./ssh:/root/.ssh:ro
+      - minio:/minio_data:/data
+      - minio:/ssh:/root/.ssh:ro
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -38,4 +36,5 @@ services:
 
 
 volumes:
-  data:
+  minio:
+    driver: local
