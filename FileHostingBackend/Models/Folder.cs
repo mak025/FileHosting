@@ -16,7 +16,7 @@ namespace FileHostingBackend.Models
         public bool Visibility { get; set; }
 
         public Folder() { }
-        public Folder 
+        
 
     }
 }
