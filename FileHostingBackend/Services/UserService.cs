@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FileHostingBackend.Repos
+namespace FileHostingBackend.Services
 {
-    public interface IUser
+    internal class UserService
     {
     }
 }
