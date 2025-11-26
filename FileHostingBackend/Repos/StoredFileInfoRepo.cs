@@ -19,21 +19,18 @@ namespace FileHostingBackend.Repos
         private readonly IMinioClient _minioClient;      // MinIO client used to interact with the storage server
         private readonly string _bucketName;             // Bucket to store files
         private readonly MinioSettings _settings;        // MinIO configuration settings
-        private readonly FileHostDBContext _dbContext;   // EF DbContext to persist file metadata
 
         // Constructor receives configuration and DbContext via DI
-        public StoredFileInfoRepo(IOptions<MinioSettings> settings, FileHostDBContext dbContext)
+        public StoredFileInfoRepo(IOptions<MinioSettings> settings)
         {
-            var minioSettings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
-            _bucketName = minioSettings.BucketName ?? throw new ArgumentException("BucketName must be configured in MinioSettings");
+            var config = settings.Value;
+            _bucketName = config.BucketName;
 
-            // Build the MinIO client using the builder-style API
             _minioClient = new MinioClient()
-                .WithEndpoint(minioSettings.Endpoint)
-                .WithCredentials(minioSettings.AccessKey, minioSettings.SecretKey)
-                .Build();
-
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+                                .WithEndpoint(config.Endpoint)
+                                .WithCredentials(config.AccessKey, config.SecretKey)
+                                .Build();
+            EnsureBucketExistsAsync().Wait();
         }
 
         // Upload an IFormFile to MinIO + save metadata in DB.
