@@ -19,5 +19,11 @@ namespace FileHostingBackend.Models
             UnionName = unionName;
             Members = members;
         }
+
+      
+       
+
+
+
     }
 }
