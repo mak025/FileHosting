@@ -42,6 +42,5 @@ namespace FileHostingBackend.Models
                 union.Members.Add(this);
             }
         }
-
     }
 }
