@@ -17,19 +17,18 @@ namespace FileHostingBackend.Repos
             _connectionString = connectionString;
         }
 
-        public void CreateUser(User user)
+        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType)
         {
             using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("INSERT INTO Users (Name, Email, Address, PhoneNumber, UnionId, Type) VALUES (@Name, @Email, @Address, @PhoneNumber, @UnionId, @Type);", connection);
-
-                command.Parameters.AddWithValue("@Name", user.Name);
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@Address", user.Address);
-                command.Parameters.AddWithValue("@PhoneNumber", user.PhoneNumber);
-                command.Parameters.AddWithValue("@UnionId", (object?)user.UnionId ?? DBNull.Value);
-                command.Parameters.AddWithValue("@Type", user.Type.ToString());
+                using var command = new SqlCommand("INSERT INTO Users (Name, Email, Address, PhoneNumber, Type) VALUES (@Name, @Email, @Address, @PhoneNumber, @Type);", connection);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Email", email);
+                command.Parameters.AddWithValue("@Address", address);
+                command.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
+                command.Parameters.AddWithValue("@Type", userType);
+              
                 connection.Open();
                 command.ExecuteNonQuery();
             }
@@ -74,7 +73,7 @@ namespace FileHostingBackend.Repos
                 connection.Close();
             }
         }
-        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
+        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, object? union, int userType)
         {
             using var connection = new SqlConnection(_connectionString);
             try
