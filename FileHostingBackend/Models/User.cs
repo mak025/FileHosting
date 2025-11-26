@@ -12,7 +12,8 @@ namespace FileHostingBackend.Models
         public enum UserType
         {
             Admin,
-            Member
+            Member,
+            SysAdmin
         }
         private static int _tempId = 0;
         public int ID { get; set; }
