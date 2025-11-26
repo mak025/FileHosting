@@ -1,25 +1,26 @@
-﻿using FileHosting.Models;
-using FileHostingBackend.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Minio;
-using Minio.DataModel.Args;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
+using FileHosting.Models;
+using FileHostingBackend.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace FileHostingBackend.Repos
 {
     public class StoredFileInfoRepo : IStoredFileInfoRepo
     {
+        private readonly IMinioClient _minioClient;      // MinIO client used to interact with the storage server
+        private readonly string _bucketName;             // Bucket to store files
+        private readonly MinioSettings _settings;        // MinIO configuration settings
 
-        private readonly IMinioClient _minioClient;
-        private readonly string _bucketName;
-        private readonly MinioSettings _settings;
-
+        // Constructor receives configuration and DbContext via DI
         public StoredFileInfoRepo(IOptions<MinioSettings> settings)
         {
             var config = settings.Value;
@@ -31,6 +32,8 @@ namespace FileHostingBackend.Repos
                                 .Build();
             EnsureBucketExistsAsync().Wait();
         }
+
+        // Upload an IFormFile to MinIO + save metadata in DB.
 
         private async Task EnsureBucketExistsAsync()
         {
