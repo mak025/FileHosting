@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 ﻿namespace FileHosting.Models
+=======
+﻿namespace FileHostingBackend.Models
+>>>>>>> Stashed changes
 {
     public class MinioSettings
     {
