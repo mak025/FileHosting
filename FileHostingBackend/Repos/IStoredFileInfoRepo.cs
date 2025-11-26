@@ -1,4 +1,5 @@
 ﻿using FileHostingBackend.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,12 @@ using System.Threading.Tasks;
 
 namespace FileHostingBackend.Repos
 {
-    public interface IStoredFileInfo
+    public interface IStoredFileInfoRepo
     {
         Task<string> UploadFileAsync(IFormFile file);
         Task<List<StoredFileInfo>> GetAllFilesAsync();
         Task<Stream> DownloadFileAsync(string fileName);
+        Task DeleteFileAsync(string fileName);
 
     }
 }

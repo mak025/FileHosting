@@ -1,4 +1,4 @@
-﻿namespace FileHostingTest.Models
+﻿namespace FileHosting.Models
 {
     public class MinioSettings
     {
