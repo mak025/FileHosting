@@ -26,9 +26,9 @@ namespace FileHostingBackend.Services
             _userRepo.GetUserById(userId);
         }
 
-        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, object? union, int userType)
+        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
         {
-            _userRepo.UpdateUser(userId, name, email, address, phoneNumber, union, userType);
+            _userRepo.UpdateUser(name, email, address, phoneNumber,userType);
         }
 
         public void DeleteUser(int userId)
