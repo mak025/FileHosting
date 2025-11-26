@@ -21,13 +21,13 @@ namespace FileHostingBackend.Models
         public string Email { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Union? Union { get; set; }
-        public int? UnionId { get; set; } //maybe change when we are setting up DB context scaffolding?
+        public Union Union { get; set; }
+        public int UnionId { get; set; } //maybe change when we are setting up DB context scaffolding?
         public UserType Type { get; set; }
 
         public User() { }
 
-        public User(string name, string email, string address, string phoneNumber, Union? union)
+        public User(string name, string email, string address, string phoneNumber, Union union)
         {
             ID = _tempId++;
             Name = name;
@@ -35,7 +35,7 @@ namespace FileHostingBackend.Models
             Address = address;
             PhoneNumber = phoneNumber;
             Union = union;
-            UnionId = union?.UnionId; // null means "no union"
+            UnionId = union.UnionId; 
 
             if (union != null && !union.Members.Contains(this))
             {

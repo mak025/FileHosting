@@ -73,7 +73,7 @@ namespace FileHostingBackend.Repos
                 connection.Close();
             }
         }
-        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, object? union, int userType)
+        public void UpdateUser(string name, string email, string address, string phoneNumber,int userType)
         {
             using var connection = new SqlConnection(_connectionString);
             try
