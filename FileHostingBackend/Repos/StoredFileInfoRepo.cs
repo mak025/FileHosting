@@ -44,16 +44,16 @@ namespace FileHostingBackend.Repos
         {
             var fileName = $"{Guid.NewGuid()}_{file.FileName}";
 
-            using var stream = file.OpenReadStream();
-            var putArgs = new PutObjectArgs()
+            using var stream = file.OpenReadStream(); 
+            var putArgs = new PutObjectArgs() 
                 .WithBucket(_bucketName)
                 .WithObject(fileName)
                 .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(file.ContentType);
+                .WithObjectSize(file.Length) // File size in bytes
+                .WithContentType(file.ContentType); // ContentType (PDF, JPG...)
 
             await _minioClient.PutObjectAsync(putArgs);
-            return fileName;
+            return fileName; 
         }
 
         public async Task<List<StoredFileInfo>> GetAllFilesAsync()
