@@ -119,6 +119,11 @@ namespace FileHostingBackend.Repos
             return memoryStream;
         }
 
+        public async Task SoftDeleteAsync (string fileName)
+        {
+            fileName.IsSoftDeleted = true;
+        }
+
         public async Task DeleteFileAsync(string fileName)
         {
             var deleteArgs = new RemoveObjectArgs()
