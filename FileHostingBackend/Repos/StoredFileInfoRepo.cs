@@ -124,6 +124,18 @@ namespace FileHostingBackend.Repos
                 .WithBucket(_bucketName)
                 .WithObject(fileName);
             await _minioClient.RemoveObjectAsync(deleteArgs);
+            var metadata = new StoredFileInfo
+            {
+                ID = fileName,
+                Name = Path.GetFileName(fileName),
+                LastModifiedAt = DateTime.UtcNow,
+                FilePath = fileName,
+                BucketName = _bucketName,
+
+                // UploadedBy = ... // Set the user if available once user logins is fully implemented
+            };
+            _dbContext.StoredFiles.Add(metadata);          
+        
         }
     }
 }
