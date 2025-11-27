@@ -126,11 +126,11 @@ namespace FileHostingBackend.Repos
                 .WithObject(fileName);
             await _minioClient.RemoveObjectAsync(deleteArgs);
 
-            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName);
-            if (metadata != null)
-            {
-                _dbContext.StoredFiles.Remove(metadata);
-                await _dbContext.SaveChangesAsync();
+            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
+            if (metadata != null) // If metadata exists, remove it from the database
+            { 
+                _dbContext.StoredFiles.Remove(metadata); // Remove metadata
+                await _dbContext.SaveChangesAsync(); // Save changes to the database
 
             }
         }
