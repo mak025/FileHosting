@@ -13,7 +13,7 @@ namespace FileHostingBackend.Repos
         public void CreateUnion(string unionName);
         public void GetUnionById(int unionId);
         public void UpdateUnion(string unionName);
-        public void DeleteUnion(int unionId);
+        public void DeleteUnion(string unionName);
 
     }
 }
