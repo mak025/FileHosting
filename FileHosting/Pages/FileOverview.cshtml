@@ -1,4 +1,152 @@
 ﻿@page
-@model FileHosting.Pages.FileOverviewModel
+@model FileOverviewModel
 @{
+    ViewData["Title"] = "Filer";
+    
 }
+
+<h1>Filer</h1>
+<p>This is the FileOverview page.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Files</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="app-shell">
+
+        <!-- LEFT ICON SIDEBAR -->
+        <aside class="sidebar-main">
+            <div class="sidebar-main-top">
+                <div class="logo-circle"></div>
+
+                <nav class="main-nav">
+                    <a href="#" class="nav-icon active" title="Start">
+                        <span class="icon-placeholder"></span>
+                    </a>
+                    <a href="#" class="nav-icon" title="Files">
+                        <span class="icon-placeholder"></span>
+                    </a>
+                    <a href="#" class="nav-icon" title="Photos">
+                        <span class="icon-placeholder"></span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="sidebar-main-bottom">
+                <a href="#" class="nav-icon" title="Settings">
+                    <span class="icon-placeholder"></span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- SECONDARY SIDEBAR -->
+        <aside class="sidebar-secondary">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Start</h3>
+                <ul class="sidebar-list">
+                    <li class="active"><a href="#">Alle filer</a></li>
+                    <li><a href="#">Billeder</a></li>
+                    <li><a href="#">Del</a></li>
+                    <li><a href="#">Filanmodninger</a></li>
+                    <li><a href="#">Slettede filer</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Hurtig adgang</h3>
+                <ul class="sidebar-list">
+                    <li><a href="#">Stjernemarkeret</a></li>
+                    <li><a href="#">Uanonymt</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section sidebar-bottom-card">
+                <p>Træk vigtige elementer hertil.</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content-area">
+            <header class="content-header">
+                <div>
+                    <h1>Alle filer</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary">+ Ny</button>
+                </div>
+            </header>
+
+            <!-- TOOLBAR -->
+            <div class="content-toolbar">
+                <div class="toolbar-left">
+                    <button class="btn-link active">Seneste</button>
+                    <button class="btn-link">Stjernemarkeret</button>
+                    <button class="btn-link">Type</button>
+                    <button class="btn-link">Filtype</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn-outline">Upload</button>
+                    <button class="btn-outline">Ny mappe</button>
+                    <button class="btn-outline">Åbn app</button>
+                </div>
+            </div>
+
+            <!-- FILE LIST -->
+            <section class="file-list">
+                <div class="file-list-header">
+                    <div class="col-checkbox">
+                        <input type="checkbox" />
+                    </div>
+                    <div class="col-name">Navn</div>
+                    <div class="col-access">Adgang</div>
+                    <div class="col-modified">Sidst ændret</div>
+                    <div class="col-size">Størrelse</div>
+                </div>
+
+                <div class="file-row">
+                    <div class="col-checkbox">
+                        <input type="checkbox" />
+                    </div>
+                    <div class="col-name">
+                        <span class="file-icon folder"></span>
+                        Cute Dog
+                    </div>
+                    <div class="col-access">Kun dig</div>
+                    <div class="col-modified">--</div>
+                    <div class="col-size">&gt; 10.05 KB</div>
+                </div>
+
+                <div class="file-row">
+                    <div class="col-checkbox">
+                        <input type="checkbox" />
+                    </div>
+                    <div class="col-name">
+                        <span class="file-icon link"></span>
+                        Startvejledning til Dropbox Paper.url
+                    </div>
+                    <div class="col-access">Kun dig</div>
+                    <div class="col-modified">11. mar. 2018</div>
+                    <div class="col-size">240 byte</div>
+                </div>
+
+                <div class="file-row">
+                    <div class="col-checkbox">
+                        <input type="checkbox" />
+                    </div>
+                    <div class="col-name">
+                        <span class="file-icon pdf"></span>
+                        Startvejledning til Dropbox.pdf
+                    </div>
+                    <div class="col-access">Kun dig</div>
+                    <div class="col-modified">11. mar. 2018</div>
+                    <div class="col-size">0,99 MB</div>
+                </div>
+            </section>           
+        </main>
+    </div>
+</body>
+</html>
