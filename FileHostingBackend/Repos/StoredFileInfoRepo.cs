@@ -11,6 +11,7 @@ using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
+
 namespace FileHostingBackend.Repos
 {
     public class StoredFileInfoRepo : IStoredFileInfoRepo
@@ -121,7 +122,15 @@ namespace FileHostingBackend.Repos
 
         public async Task SoftDeleteAsync (string fileName)
         {
-            fileName.IsSoftDeleted = true;
+            
+            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
+            if (metadata != null) // If metadata exists, mark it as deleted
+            { 
+                metadata.IsSoftDeleted = true; // Mark as deleted
+                await _dbContext.SaveChangesAsync(); // Save changes to the database
+            }
+
+
         }
 
         public async Task DeleteFileAsync(string fileName)
