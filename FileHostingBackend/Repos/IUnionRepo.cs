@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileHostingBackend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ namespace FileHostingBackend.Repos
 {
     public interface IUnionRepo
     {
-        public void CreateUnion(string unionName, string description);
+        public void CreateUnion(string unionName);
         public void GetUnionById(int unionId);
-        public void UpdateUnion(int unionId, string unionName, string description);
+        public void UpdateUnion(string unionName);
         public void DeleteUnion(int unionId);
 
     }
