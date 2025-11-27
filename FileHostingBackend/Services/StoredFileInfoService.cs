@@ -3,10 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FileHostingBackend.Repos;
 
 namespace FileHostingBackend.Services
 {
     public class StoredFileInfoService
     {
+        private readonly IStoredFileInfoRepo _storedFileInfoRepo;
+
+        public StoredFileInfoService(IStoredFileInfoRepo storedFileInfoRepo)
+        {
+            _storedFileInfoRepo = storedFileInfoRepo;
+        }
+        public async Task<string> UploadFileAsync(Microsoft.AspNetCore.Http.IFormFile file)
+        {
+            return await _storedFileInfoRepo.UploadFileAsync(file);
+        }
+        public async Task<List<Models.StoredFileInfo>> GetAllFilesAsync()
+        {
+            return await _storedFileInfoRepo.GetAllFilesAsync();
+        }
+        public async Task<System.IO.Stream> DownloadFileAsync(string fileName)
+        {
+            return await _storedFileInfoRepo.DownloadFileAsync(fileName);
+        }
+        public async Task DeleteFileAsync(string fileName)
+        {
+            await _storedFileInfoRepo.DeleteFileAsync(fileName);
+        }
+        public async Task SoftDeleteAsync(string fileName)
+        {
+            await _storedFileInfoRepo.SoftDeleteAsync(fileName);
+        }
     }
 }
