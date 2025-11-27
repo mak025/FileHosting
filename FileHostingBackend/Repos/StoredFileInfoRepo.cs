@@ -82,7 +82,7 @@ namespace FileHostingBackend.Repos
                 FilePath = fileName,
                 BucketName = _bucketName,
                 UploadedAt = DateTime.UtcNow,
-                // UploadedBy = ... // Set the user if available
+                // UploadedBy = ... // Set the user if available once user logins is fully implemented
             };
             _dbContext.StoredFiles.Add(metadata);
             return fileName; 
