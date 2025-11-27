@@ -118,6 +118,7 @@ namespace FileHostingBackend.Repos
             memoryStream.Position = 0;
             return memoryStream;
         }
+
         public async Task DeleteFileAsync(string fileName)
         {
             var deleteArgs = new RemoveObjectArgs()
