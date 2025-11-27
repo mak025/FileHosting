@@ -9,10 +9,10 @@ namespace FileHostingBackend.Repos
 {
     public interface IUnionRepo
     {
-        public void CreateUnion(string unionName, string member);
-        public void UpdateUnion();
-        public void DeleteUnion();
-        public void GetUnionById();
-       
+        public void CreateUnion(string unionName, string description);
+        public void GetUnionById(int unionId);
+        public void UpdateUnion(int unionId, string unionName, string description);
+        public void DeleteUnion(int unionId);
+
     }
 }

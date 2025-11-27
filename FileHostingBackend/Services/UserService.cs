@@ -36,7 +36,5 @@ namespace FileHostingBackend.Services
             _userRepo.DeleteUser(userId);
         }
 
-
-
     }
 }
