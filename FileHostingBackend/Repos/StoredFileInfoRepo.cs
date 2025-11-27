@@ -39,7 +39,7 @@ namespace FileHostingBackend.Repos
 
         private async Task EnsureBucketExistsAsync()
         {
-            try 
+            try
             {
                 bool exists = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_settings.BucketName));
                 if (!exists)
@@ -63,8 +63,8 @@ namespace FileHostingBackend.Repos
             // Create a unique object name to avoid collisions in the bucket.
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
 
-            using var stream = file.OpenReadStream(); 
-            var putArgs = new PutObjectArgs() 
+            using var stream = file.OpenReadStream();
+            var putArgs = new PutObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(fileName)
                 .WithStreamData(stream)
@@ -85,7 +85,7 @@ namespace FileHostingBackend.Repos
                 // UploadedBy = ... // Set the user if available once user logins is fully implemented
             };
             _dbContext.StoredFiles.Add(metadata);
-            return fileName; 
+            return fileName;
         }
 
         public async Task<List<StoredFileInfo>> GetAllFilesAsync()
@@ -124,18 +124,14 @@ namespace FileHostingBackend.Repos
                 .WithBucket(_bucketName)
                 .WithObject(fileName);
             await _minioClient.RemoveObjectAsync(deleteArgs);
-            var metadata = new StoredFileInfo
-            {
-                ID = fileName,
-                Name = Path.GetFileName(fileName),
-                LastModifiedAt = DateTime.UtcNow,
-                FilePath = fileName,
-                BucketName = _bucketName,
 
-                // UploadedBy = ... // Set the user if available once user logins is fully implemented
-            };
-            _dbContext.StoredFiles.Add(metadata);          
-        
+            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName);
+            if (metadata != null)
+            {
+                _dbContext.StoredFiles.Remove(metadata);
+                await _dbContext.SaveChangesAsync();
+
+            }
         }
     }
 }
