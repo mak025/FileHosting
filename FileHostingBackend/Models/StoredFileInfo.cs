@@ -18,6 +18,7 @@ namespace FileHostingBackend.Models
         public string FilePath { get; set; } // Path in the storage system
         public string ShareLink { get; set; } // Public shareable link
         public string BucketName { get; set; } // Storage bucket name
+        public bool IsSoftDeleted { get; set; }
         public StoredFileInfo() { }
     }
 }
