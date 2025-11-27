@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace FileHostingBackend.Repos
 {
     public interface IUnionRepo
     {
+        public void CreateUnion(string unionName, string member);
+        public void UpdateUnion();
+        public void DeleteUnion();
+        public void GetUnionById();
+       
     }
 }
