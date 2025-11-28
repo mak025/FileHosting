@@ -77,7 +77,7 @@ namespace FileHostingBackend.Repos
 
             var metadata = new StoredFileInfo
             {
-                ID = fileName,
+                //ID = fileName,**//
                 Name = Path.GetFileName(file.FileName),
                 Size = (int)file.Length,
                 LastModifiedAt = DateTimeOffset.UtcNow,

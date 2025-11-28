@@ -9,8 +9,7 @@ namespace FileHostingBackend.Models
 {
     public class Folder
     {
-        private static int _tempId = 0;
-        public int Id { get; set; }
+        public int Id { get; private set; }
         public string Name { get; set; }
         public string Path { get; set; }
         public Folder? ParentFolder { get; set; }
@@ -21,13 +20,10 @@ namespace FileHostingBackend.Models
 
         public Folder (string name, string path, Folder parentFolder, string bucketName)
         {
-            Id = _tempId++;
             Name = name;
             Path = path;
             ParentFolder = parentFolder;
             BucketName = bucketName;
-            
-            
         }
     }
 }

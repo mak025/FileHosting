@@ -8,7 +8,7 @@ namespace FileHostingBackend.Models
 {
     public class StoredFileInfo
     {
-        public string ID { get; set; }
+        public string ID { get; private set; }
         public Folder? Folder { get; set; }
         public string Name { get; set; }
         public int Size { get; set; } // Size in bytes

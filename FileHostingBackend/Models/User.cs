@@ -15,8 +15,7 @@ namespace FileHostingBackend.Models
             Member,
             SysAdmin
         }
-        private static int _tempId = 0;
-        public int ID { get; set; }
+        public int ID { get; private set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
@@ -29,7 +28,6 @@ namespace FileHostingBackend.Models
 
         public User(string name, string email, string address, string phoneNumber, Union union)
         {
-            ID = _tempId++;
             Name = name;
             Email = email;
             Address = address;
