@@ -8,6 +8,7 @@ namespace FileHosting
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+           
 
             var app = builder.Build();
 

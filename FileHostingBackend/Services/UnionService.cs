@@ -16,21 +16,25 @@ namespace FileHostingBackend.Services
             _unionRepo = unionRepo;
         }
 
-        public void CreateUnion(string unionName, string description)
+        public void CreateUnion(string unionName)
         {
-            _unionRepo.CreateUnion(unionName, description);
+            _unionRepo.CreateUnion(unionName);
         }
         public void GetUnionById(int unionId)
         {
             _unionRepo.GetUnionById(unionId);
         }
-        public void UpdateUnion(int unionId, string unionName, string description)
+        public void UpdateUnion(string unionName)
         {
-            _unionRepo.UpdateUnion(unionId, unionName, description);
+            _unionRepo.UpdateUnion(unionName);
         }
-        public void DeleteUnion(int unionId)
+        public void DeleteUnion(string unionName)
         {
-            _unionRepo.DeleteUnion(unionId);
+            _unionRepo.DeleteUnion(unionName);
+
         }
+
+        
     }
+
 }
