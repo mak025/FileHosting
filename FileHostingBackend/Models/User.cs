@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-using FileHostingBackend.Models;
+
 namespace FileHostingBackend.Models
 {
-    public abstract class User
+    public abstract class User : BaseEntity
     {
         public enum UserType
         {
@@ -15,29 +14,31 @@ namespace FileHostingBackend.Models
             Member,
             SysAdmin
         }
-        public int ID { get; private set; }
-        public string Name { get; set; }
+
         public string Email { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public Union Union { get; set; }
-        public int UnionId { get; set; } //maybe change when we are setting up DB context scaffolding?
+        public Union? Union { get; set; }
+        public int UnionId { get; set; } // still used as FK on User
+
         public UserType Type { get; set; }
 
-        public User() { }
+        public User() : base() { }
 
-        public User(string name, string email, string address, string phoneNumber, Union union)
+        public User(string name, string email, string address, string phoneNumber, Union? union)
+            : base(name)
         {
-            Name = name;
             Email = email;
             Address = address;
             PhoneNumber = phoneNumber;
             Union = union;
-            UnionId = union.UnionId; 
-
-            if (union != null && !union.Members.Contains(this))
+            if (union != null)
             {
-                union.Members.Add(this);
+                UnionId = union.UnionId;
+                if (!union.Members.Contains(this))
+                {
+                    union.Members.Add(this);
+                }
             }
         }
     }

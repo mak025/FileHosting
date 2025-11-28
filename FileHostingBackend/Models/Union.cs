@@ -1,21 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace FileHostingBackend.Models
 {
-    public class Union
+    public class Union : BaseEntity
     {
-        public int UnionId { get; private set; }
-        public string UnionName { get; set; }
-        public List<User> Members { get; set; } = new List<User>();
-        public Union() { }
-        public Union(string unionName, List<User>members)
+        // Keep a compatibility accessor for code that expects UnionId.
+        // We return the base ID. No setter needed because EF will set ID itself.
+        public int UnionId => ID;
+
+        // Domain-specific alias for the inherited Name property
+        public string UnionName
         {
-            UnionName = unionName;
-            Members = members;
+            get => Name;
+            set => Name = value;
+        }
+
+        public List<User> Members { get; set; } = new List<User>();
+
+        public Union() : base() { }
+
+        public Union(string unionName, List<User>? members = null) : base(unionName)
+        {
+            Members = members ?? new List<User>();
         }
     }
 }
+
