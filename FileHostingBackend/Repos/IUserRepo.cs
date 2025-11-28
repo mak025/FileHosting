@@ -12,9 +12,5 @@ namespace FileHostingBackend.Repos
         public void GetUserById(int userId);
         public void UpdateUser(string name, string email, string address, string phoneNumber,int userType);
         public void DeleteUser(int userId);
-
-
-
-
     }
 }

@@ -16,7 +16,7 @@ namespace FileHostingBackend.Repos
         {
             _connectionString = connectionString;
         }
-
+        
         public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -124,7 +124,6 @@ namespace FileHostingBackend.Repos
             {
                 connection.Close();
             }
-
 
         }
     }

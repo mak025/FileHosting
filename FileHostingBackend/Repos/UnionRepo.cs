@@ -94,7 +94,6 @@ namespace FileHostingBackend.Repos
             {
                 connection.Close();
             }
-
         }
 
         public void UpdateUnion(string unionName)
@@ -119,8 +118,6 @@ namespace FileHostingBackend.Repos
             {
                 connection.Close();
             }
-
-
         }
-}
+    }
 }

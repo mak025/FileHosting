@@ -17,7 +17,5 @@ namespace FileHostingBackend.Repos
         Task<Stream> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(string fileName);
         Task SoftDeleteAsync (string fileName);
-
-
     }
 }
