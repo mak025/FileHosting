@@ -12,9 +12,9 @@ namespace FileHostingBackend.Models
         public enum UserType
         {
             // Flyt ikke rundt i rækkefølgen af listen nedenunder - giver problemer senere hvis den ændres!!
-            Admin,
-            Member,
-            SysAdmin
+            Member = 0,
+            Admin = 800,
+            SysAdmin = 900
         }
         public int ID { get; private set; }
         public string Name { get; set; }
