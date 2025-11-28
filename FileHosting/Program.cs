@@ -17,8 +17,7 @@ namespace FileHosting
             builder.Services.AddRazorPages();
 
             // Example: configure EF Core DbContext (use your connection string or configuration)
-            var connectionString = builder.Configuration.GetConnectionString("FileHostingDb")
-                                   ?? "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
+            var connectionString = "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
             builder.Services.AddDbContext<FileHostDBContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -30,6 +29,13 @@ namespace FileHosting
             // Optionally: builder.Services.AddScoped<StoredFileInfoService();
 
             var app = builder.Build();
+
+            // Auto updates the database on application run
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<FileHostDBContext>();
+                dbContext.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
