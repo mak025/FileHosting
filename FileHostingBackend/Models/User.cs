@@ -11,6 +11,7 @@ namespace FileHostingBackend.Models
     {
         public enum UserType
         {
+            // Flyt ikke rundt i rækkefølgen af listen nedenunder - giver problemer senere hvis den ændres!!
             Admin,
             Member,
             SysAdmin
