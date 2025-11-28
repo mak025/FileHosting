@@ -79,10 +79,10 @@ namespace FileHostingBackend.Repos
                 ID = fileName,
                 Name = Path.GetFileName(file.FileName),
                 Size = (int)file.Length,
-                LastModifiedAt = DateTime.UtcNow,
+                LastModifiedAt = DateTimeOffset.UtcNow,
                 FilePath = fileName,
                 BucketName = _bucketName,
-                UploadedAt = DateTime.UtcNow,
+                UploadedAt = DateTimeOffset.UtcNow,
                 // UploadedBy = ... // Set the user if available once user logins is fully implemented
             };
             _dbContext.StoredFiles.Add(metadata);
