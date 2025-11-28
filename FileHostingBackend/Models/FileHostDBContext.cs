@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace FileHostingBackend.Models
 {
@@ -15,15 +16,21 @@ namespace FileHostingBackend.Models
         public DbSet<Member> Members { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<StoredFileInfo> StoredFiles { get; set; }
-        public DbSet<Folder> Folders { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DbSet<Folder> Folders
         {
-            // Only apply the fallback connection string when no options were configured
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;");
-            }
+            get; set;
+        }
+    }
+
+    // Do not delete below class - used for migrating to database 
+    // https://learn.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli
+    public class FileHostingDbContextFactory : IDesignTimeDbContextFactory<FileHostDBContext>
+    {
+        public FileHostDBContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<FileHostDBContext>();
+            optionsBuilder.UseSqlServer();
+            return new FileHostDBContext(optionsBuilder.Options);
         }
     }
 }
