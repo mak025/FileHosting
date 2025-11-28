@@ -83,8 +83,9 @@ namespace FileHostingBackend.Repos
                 LastModifiedAt = DateTimeOffset.UtcNow,
                 FilePath = fileName,
                 BucketName = _bucketName,
-                UploadedAt = DateTime.UtcNow,
+                UploadedAt = DateTimeOffset.UtcNow,
                 IsSoftDeleted = false
+                //UploadedBy... To be implemented when login system is functional
             };
 
             _dbContext.StoredFiles.Add(metadata);
