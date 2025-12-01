@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace FileHosting.Pages
+namespace FileHosting.Pages.Account
 {
-    public class LoginModel : PageModel
+    public class AccessDeniedModel : PageModel
     {
         public void OnGet()
         {

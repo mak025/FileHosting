@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Http;                      // IFormFile
 using FileHostingBackend.Repos;                       // IStoredFileInfoRepo
 using FileHostingBackend.Models;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace FileHosting.Pages
 {
+    [Authorize]
     public class FileOverviewModel : PageModel
     {
         private readonly IStoredFileInfoRepo _storedFileInfoRepo;
