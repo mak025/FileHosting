@@ -16,7 +16,7 @@ namespace FileHostingBackend.Models
         public User UploadedBy { get; set; }
         public DateTimeOffset LastModifiedAt { get; set; }
         public string FilePath { get; set; } // Path in the storage system
-        public string? ShareLink { get; set; } // Public shareable link
+        public string? ShareLink { get; set; } = String.Empty; // Public shareable link. String.Empty default value
         public string BucketName { get; set; } // Storage bucket name
         public bool IsSoftDeleted { get; set; } = false; // Soft delete flag
         public StoredFileInfo() { }
