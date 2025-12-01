@@ -12,7 +12,7 @@ namespace FileHostingBackend.Repos
 {
     public interface IStoredFileInfoRepo
     {
-        Task UploadFileAsync(IFormFile file);
+        Task<string> UploadFileAsync(IFormFile file);
         Task<List<StoredFileInfo>> GetAllFilesAsync();
         Task<Stream> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(string fileName);
