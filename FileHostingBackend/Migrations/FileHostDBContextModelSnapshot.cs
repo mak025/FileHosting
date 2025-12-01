@@ -57,8 +57,11 @@ namespace FileHostingBackend.Migrations
 
             modelBuilder.Entity("FileHostingBackend.Models.StoredFileInfo", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("BucketName")
                         .IsRequired()

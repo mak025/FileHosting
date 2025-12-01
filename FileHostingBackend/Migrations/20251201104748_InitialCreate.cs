@@ -56,7 +56,7 @@ namespace FileHostingBackend.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnionId = table.Column<int>(type: "int", nullable: true),
+                    UnionId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false)
                 },
@@ -67,23 +67,26 @@ namespace FileHostingBackend.Migrations
                         name: "FK_Users_Union_UnionId",
                         column: x => x.UnionId,
                         principalTable: "Union",
-                        principalColumn: "UnionId");
+                        principalColumn: "UnionId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "StoredFiles",
                 columns: table => new
                 {
-                    ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FolderId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Size = table.Column<int>(type: "int", nullable: false),
-                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UploadedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UploadedByID = table.Column<int>(type: "int", nullable: false),
-                    LastModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShareLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BucketName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    BucketName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsSoftDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

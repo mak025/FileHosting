@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FileHostingBackend.Migrations
 {
     [DbContext(typeof(FileHostDBContext))]
-    [Migration("20251128113409_InitialCreate")]
+    [Migration("20251201104748_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,8 +60,11 @@ namespace FileHostingBackend.Migrations
 
             modelBuilder.Entity("FileHostingBackend.Models.StoredFileInfo", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<string>("BucketName")
                         .IsRequired()
