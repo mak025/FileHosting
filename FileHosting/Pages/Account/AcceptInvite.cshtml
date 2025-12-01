@@ -1,0 +1,49 @@
+﻿@page
+@model FileHosting.Pages.Account.AcceptInviteModel
+@{
+    ViewData["Title"] = "Accept invitation";
+}
+
+<section class="page-card">
+    <h1>Accept invitation</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="status error">@Model.ErrorMessage</div>
+    }
+    else
+    {
+        <form method="post" class="form-compact">
+            <input type="hidden" asp-for="Input.Token" />
+            <div class="field">
+                <label asp-for="Input.Email">Email</label>
+                <input asp-for="Input.Email" class="form-control" readonly />
+            </div>
+
+            <div class="field">
+                <label asp-for="Input.Name">Full name</label>
+                <input asp-for="Input.Name" class="form-control" />
+                <span asp-validation-for="Input.Name" class="validation-msg"></span>
+            </div>
+
+            <div class="field">
+                <label asp-for="Input.Address">Address</label>
+                <input asp-for="Input.Address" class="form-control" />
+            </div>
+
+            <div class="field">
+                <label asp-for="Input.PhoneNumber">Phone</label>
+                <input asp-for="Input.PhoneNumber" class="form-control" />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create account</button>
+                <a class="btn btn-ghost" asp-page="/Account/Login">Sign in</a>
+            </div>
+        </form>
+    }
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

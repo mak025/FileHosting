@@ -20,6 +20,8 @@ namespace FileHostingBackend.Models
         {
             get; set;
         }
+        public DbSet<Invite> Invites { get; set; }
+        public DbSet<Union> Union { get; set; }
     }
 
     // Do not delete below class - used for migrating to database 

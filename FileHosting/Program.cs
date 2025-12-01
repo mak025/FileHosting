@@ -1,5 +1,6 @@
 using FileHostingBackend.Models;
 using FileHostingBackend.Repos;
+using FileHostingBackend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,6 @@ namespace FileHosting
             var connectionString = "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
             builder.Services.AddDbContext<FileHostDBContext>(options =>
                 options.UseSqlServer(connectionString));
-
 
 
 
@@ -52,6 +52,16 @@ namespace FileHosting
 
             // Bind Minio settings from configuration (appsettings.json -> "Minio")
             builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("Minio"));
+
+            // Bind Email settings (appsettings.json -> "Email")
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+
+
+
+            // Register InviteService and other app services
+            builder.Services.AddScoped<InviteService>();
+
+
 
             // Register repo and service
             builder.Services.AddScoped<IStoredFileInfoRepo, StoredFileInfoRepo>();
