@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileHostingBackend.Repos;
+using FileHostingBackend.Models;
 
 namespace FileHostingBackend.Services
 {
@@ -15,9 +16,9 @@ namespace FileHostingBackend.Services
         {
             _storedFileInfoRepo = storedFileInfoRepo;
         }
-        public async Task<string> UploadFileAsync(Microsoft.AspNetCore.Http.IFormFile file)
+        public async Task<string> UploadFileAsync(Microsoft.AspNetCore.Http.IFormFile file, User user)
         {
-            await _storedFileInfoRepo.UploadFileAsync(file);
+            await _storedFileInfoRepo.UploadFileAsync(file, user);
             return "File uploaded successfully";
 
         }
