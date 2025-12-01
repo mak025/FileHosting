@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using FileHostingBackend.Models;
 namespace FileHostingBackend.Models
 {
-    public abstract class User
+    
+    public class User
     {
         public enum UserType
         {
@@ -34,11 +35,13 @@ namespace FileHostingBackend.Models
             Address = address;
             PhoneNumber = phoneNumber;
             Union = union;
-            UnionId = union.UnionId; 
-
-            if (union != null && !union.Members.Contains(this))
+            if (union != null)
             {
-                union.Members.Add(this);
+                UnionId = union.UnionId;
+                if (!union.Members.Contains(this))
+                {
+                    union.Members.Add(this);
+                }
             }
         }
     }
