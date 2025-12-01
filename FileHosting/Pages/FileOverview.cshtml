@@ -1,8 +1,30 @@
 ﻿@page
 @model FileOverviewModel
+@using System.Linq
+
 @{
     ViewData["Title"] = "Filer";
-    
+}
+
+@functions {
+    // Returns CSS classes for the thumbnail based on file extension
+    public string GetFileTypeClass(string fileName)
+    {
+        var ext = System.IO.Path.GetExtension(fileName)?.ToLower() ?? "";
+
+        return ext switch
+        {
+            ".pdf" => "file-thumb pdf",
+            ".doc" or ".docx" => "file-thumb doc",
+            ".xls" or ".xlsx" => "file-thumb xls",
+            ".ppt" or ".pptx" => "file-thumb ppt",
+            ".png" or ".jpg" or ".jpeg" or ".gif" => "file-thumb image",
+            ".txt" => "file-thumb txt",
+            ".url" => "file-thumb url",
+            ".zip" or ".rar" => "file-thumb zip",
+            _ => "file-thumb generic"
+        };
+    }
 }
 
 <h1>Filer</h1>
@@ -95,57 +117,61 @@
                 </div>
             </div>
 
-            <!-- FILE LIST -->
-            <section class="file-list">
-                <div class="file-list-header">
-                    <div class="col-checkbox">
-                        <input type="checkbox" />
-                    </div>
-                    <div class="col-name">Navn</div>
-                    <div class="col-access">Adgang</div>
-                    <div class="col-modified">Sidst ændret</div>
-                    <div class="col-size">Størrelse</div>
-                </div>
+            <!-- FILE GRID (Drive-like) -->
+            <section class="file-grid">
+                @if (Model.Files != null && Model.Files.Any())
+                {
+                    @foreach (var file in Model.Files)
+                    {
+                        <article class="file-card">
+                            <a asp-page-handler="Download"
+                               asp-route-fileName="@file.Name"
+                               class="file-card-link">
 
-                <div class="file-row">
-                    <div class="col-checkbox">
-                        <input type="checkbox" />
-                    </div>
-                    <div class="col-name">
-                        <span class="file-icon folder"></span>
-                        Cute Dog
-                    </div>
-                    <div class="col-access">Kun dig</div>
-                    <div class="col-modified">--</div>
-                    <div class="col-size">&gt; 10.05 KB</div>
-                </div>
+                                <!-- Thumbnail / preview -->
+                                <div class="@GetFileTypeClass(file.Name)">
+                                    @* If it's an image, you can show a real preview if you expose a URL *@
+                                    @if (System.IO.Path.GetExtension(file.Name).ToLower() is ".png" or ".jpg" or ".jpeg" or ".gif")
+                                    {
+                                        <!-- replace src with your own image-serving endpoint if you have one -->
+                                        <span class="file-icon-label">
+                                            @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="file-icon-label">
+                                            @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
+                                        </span>
+                                    }
+                                </div>
 
-                <div class="file-row">
-                    <div class="col-checkbox">
-                        <input type="checkbox" />
-                    </div>
-                    <div class="col-name">
-                        <span class="file-icon link"></span>
-                        Startvejledning til Dropbox Paper.url
-                    </div>
-                    <div class="col-access">Kun dig</div>
-                    <div class="col-modified">11. mar. 2018</div>
-                    <div class="col-size">240 byte</div>
-                </div>
+                                <!-- File name -->
+                                <div class="file-title" title="@file.Name">
+                                    @file.Name
+                                </div>
+                            </a>
 
-                <div class="file-row">
-                    <div class="col-checkbox">
-                        <input type="checkbox" />
-                    </div>
-                    <div class="col-name">
-                        <span class="file-icon pdf"></span>
-                        Startvejledning til Dropbox.pdf
-                    </div>
-                    <div class="col-access">Kun dig</div>
-                    <div class="col-modified">11. mar. 2018</div>
-                    <div class="col-size">0,99 MB</div>
-                </div>
-            </section>    
+                            <!-- Bottom meta row -->
+                            <div class="file-meta">
+                                <div class="file-avatar"></div>
+                                <div class="file-meta-text">
+                                    <div class="file-meta-owner">Åbnet af dig</div>
+                                    <div class="file-meta-date">
+                                        @file.UploadedAt.ToString("d. MMM yyyy")
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                }
+                else
+                {
+                    <p>Ingen filer endnu.</p>
+                }
+            </section>
+
+            <!-- UPLOAD SECTION -->
             <section class="upload-section" style="margin-top: 40px;">
                 <h2>Upload filer</h2>
 
