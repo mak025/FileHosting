@@ -145,7 +145,25 @@
                     <div class="col-modified">11. mar. 2018</div>
                     <div class="col-size">0,99 MB</div>
                 </div>
-            </section>           
+            </section>    
+            <section class="upload-section" style="margin-top: 40px;">
+                <h2>Upload filer</h2>
+
+                <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
+                    <input type="file" name="Upload" />
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="validation-errors">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p style="color:red">@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+            </section>
         </main>
     </div>
 </body>
