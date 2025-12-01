@@ -1,0 +1,29 @@
+﻿@page
+@model FileHosting.Pages.Admin.InviteMemberModel
+@{
+    ViewData["Title"] = "Invite Member";
+}
+
+<section class="page-card">
+    <h1>Invite member</h1>
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="status success">@Model.StatusMessage</div>
+    }
+
+    <form method="post" class="form-compact">
+        <label asp-for="Input.Email">Email</label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="validation-msg"></span>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Send invite</button>
+            <a class="btn btn-ghost" asp-page="/Index">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
