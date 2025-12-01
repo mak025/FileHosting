@@ -57,41 +57,41 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file)
+        public async Task UploadFileAsync(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                throw new ArgumentNullException(nameof(file));
+            // 1. Upload to MinIO (fake example)
+            var objectName = Guid.NewGuid().ToString();
 
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+            using (var stream = file.OpenReadStream())
+            {
+                await _minioClient.PutObjectAsync(
+                    new PutObjectArgs()
+                        .WithBucket("your-bucket")
+                        .WithObject(objectName)
+                        .WithStreamData(stream)
+                        .WithObjectSize(file.Length)
+                        .WithContentType(file.ContentType)
+                );
+            }
 
-            using var stream = file.OpenReadStream();
-
-            var putArgs = new PutObjectArgs()
-                .WithBucket(_bucketName)
-                .WithObject(fileName)
-                .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(file.ContentType);
-
-            await _minioClient.PutObjectAsync(putArgs);
-
+            
             var metadata = new StoredFileInfo
             {
-                //ID = fileName,**//
-                Name = Path.GetFileName(file.FileName),
+                Name = file.FileName,
                 Size = (int)file.Length,
-                LastModifiedAt = DateTimeOffset.UtcNow,
-                FilePath = fileName,
+                FilePath = objectName,
                 BucketName = _bucketName,
-                UploadedAt = DateTimeOffset.UtcNow,
-                IsSoftDeleted = false
-                //UploadedBy... To be implemented when login system is functional
+             
+
+              
+                ShareLink = string.Empty, 
+
+                UploadedAt = DateTime.UtcNow
             };
 
             _dbContext.StoredFiles.Add(metadata);
-            await _dbContext.SaveChangesAsync();   // 👈 important
-
-            return fileName;
+            await _dbContext.SaveChangesAsync();
+               
         }
 
         // I’d base the overview on the DB so we can filter on IsSoftDeleted etc.

@@ -17,7 +17,9 @@ namespace FileHostingBackend.Services
         }
         public async Task<string> UploadFileAsync(Microsoft.AspNetCore.Http.IFormFile file)
         {
-            return await _storedFileInfoRepo.UploadFileAsync(file);
+            await _storedFileInfoRepo.UploadFileAsync(file);
+            return "File uploaded successfully";
+
         }
         public async Task<List<Models.StoredFileInfo>> GetAllFilesAsync()
         {
