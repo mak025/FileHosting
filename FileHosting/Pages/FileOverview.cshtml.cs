@@ -12,10 +12,12 @@ namespace FileHosting.Pages
     public class FileOverviewModel : PageModel
     {
         private readonly IStoredFileInfoRepo _storedFileInfoRepo;
+        private readonly FileHostDBContext _dbContext;
 
-        public FileOverviewModel(IStoredFileInfoRepo fileStorageService)
+        public FileOverviewModel(IStoredFileInfoRepo fileStorageService, FileHostDBContext dbContext)
         {
             _storedFileInfoRepo = fileStorageService;
+            _dbContext = dbContext;
         }
 
         [BindProperty]
@@ -36,7 +38,24 @@ namespace FileHosting.Pages
                 return Page();
             }
 
-            await _storedFileInfoRepo.UploadFileAsync(Upload);
+            // Get user ID from claims
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            {
+                ModelState.AddModelError("", "User not authenticated.");
+                return Page();
+            }
+
+            // Fetch user from DB
+            var user = await _dbContext.Users.FindAsync(userId); // _dbContext injected via DI
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "User not found.");
+                return Page();
+            }
+
+            await _storedFileInfoRepo.UploadFileAsync(Upload, user);
             return RedirectToPage();
         }
 

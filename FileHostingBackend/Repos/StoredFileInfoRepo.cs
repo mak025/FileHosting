@@ -57,7 +57,7 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file)
+        public async Task<string> UploadFileAsync(IFormFile file, User user)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentNullException(nameof(file));
@@ -84,8 +84,8 @@ namespace FileHostingBackend.Repos
                 FilePath = fileName,
                 BucketName = _bucketName,
                 UploadedAt = DateTimeOffset.UtcNow,
-                IsSoftDeleted = false
-                //UploadedBy... To be implemented when login system is functional
+                IsSoftDeleted = false,
+                UploadedBy = user
             };
 
             _dbContext.StoredFiles.Add(metadata);
