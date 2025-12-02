@@ -14,7 +14,6 @@ namespace FileHostingBackend.Repos
     {
         Task<string> UploadFileAsync(IFormFile file, User user);
         Task<List<StoredFileInfo>> GetAllFilesAsync();
-        Task<Stream> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(string fileName);
         Task SoftDeleteAsync (string fileName);
 

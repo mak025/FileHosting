@@ -104,12 +104,12 @@ namespace FileHostingBackend.Repos
         }
 
 
-        public async Task SoftDeleteAsync (string fileName)
+        public async Task SoftDeleteAsync(string fileName)
         {
-            
+
             var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
             if (metadata != null) // If metadata exists, mark it as deleted
-            { 
+            {
                 metadata.IsSoftDeleted = true; // Mark as deleted
                 await _dbContext.SaveChangesAsync(); // Save changes to the database
             }
@@ -126,25 +126,13 @@ namespace FileHostingBackend.Repos
 
             var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
             if (metadata != null) // If metadata exists, remove it from the database
-            { 
+            {
                 _dbContext.StoredFiles.Remove(metadata); // Remove metadata
                 await _dbContext.SaveChangesAsync(); // Save changes to the database
 
             }
         }
 
-        public async Task<Stream> DownloadFileAsync (string objectName)
-        {
-            var memoryStream = new MemoryStream();
-            var getArgs = new GetObjectArgs()
-                .WithBucket(_bucketName)
-                .WithObject(objectName)
-                .WithCallbackStream((stream) => stream.CopyTo(memoryStream));
-
-            await _minioClient.GetObjectAsync(getArgs);
-            memoryStream.Position = 0;
-            return memoryStream;
-        }
     }
 }
 
