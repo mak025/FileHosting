@@ -27,6 +27,7 @@ namespace FileHostingBackend.Services
             return await _storedFileInfoRepo.GetAllFilesAsync();
         }
         
+        
         public async Task DeleteFileAsync(string fileName)
         {
             await _storedFileInfoRepo.DeleteFileAsync(fileName);
@@ -34,6 +35,22 @@ namespace FileHostingBackend.Services
         public async Task SoftDeleteAsync(string fileName)
         {
             await _storedFileInfoRepo.SoftDeleteAsync(fileName);
+        }
+
+        // New wrappers for wastebasket
+        public async Task<List<StoredFileInfo>> GetDeletedFilesAsync()
+        {
+            return await _storedFileInfoRepo.GetDeletedFilesAsync();
+        }
+
+        public async Task RestoreAsync(string fileName)
+        {
+            await _storedFileInfoRepo.RestoreAsync(fileName);
+        }
+
+        public async Task PermanentlyDeleteAsync(string fileName)
+        {
+            await _storedFileInfoRepo.PermanentlyDeleteAsync(fileName);
         }
     }
 }

@@ -1,0 +1,36 @@
+﻿@page
+@model FileHosting.Pages.WastebasketModel
+@{
+    ViewData["Title"] = "Slettede filer";
+}
+
+<h1>Slettede filer</h1>
+
+@if (Model.DeletedFiles != null && Model.DeletedFiles.Any())
+{
+    <section class="file-grid">
+        @foreach (var file in Model.DeletedFiles)
+        {
+            <article class="file-card">
+                <div class="file-title">@file.Name</div>
+                <div class="file-meta-date">@file.UploadedAt.ToString("d. MMM yyyy")</div>
+
+                <div class="file-actions">
+                    <form method="post" asp-page-handler="Restore" style="display:inline">
+                        <input type="hidden" name="filePath" value="@file.FilePath" />
+                        <button type="submit" class="btn-link">Gendan</button>
+                    </form>
+
+                    <form method="post" asp-page-handler="Delete" style="display:inline" onsubmit="return confirm('Permanently delete this file?');">
+                        <input type="hidden" name="filePath" value="@file.FilePath" />
+                        <button type="submit" class="btn-link">Slet permanent</button>
+                    </form>
+                </div>
+            </article>
+        }
+    </section>
+}
+else
+{
+    <p>Ingen slettede filer.</p>
+}

@@ -74,7 +74,7 @@
                     <li><a href="#">Billeder</a></li>
                     <li><a href="#">Del</a></li>
                     <li><a href="#">Filanmodninger</a></li>
-                    <li><a href="#">Slettede filer</a></li>
+                    <li><a asp-page="/Wastebasket">Slettede filer</a></li>
                 </ul>
             </div>
 
@@ -171,6 +171,14 @@
                                        class="btn btn-outline"
                                        target="_blank"
                                        rel="noopener">Download</a>
+                                </div>
+
+                                <!-- Actions: Soft-delete (move to wastebasket) -->
+                                <div class="file-actions" style="margin-left: auto;">
+                                    <form method="post" asp-page-handler="SoftDelete">
+                                        <input type="hidden" name="filePath" value="@file.FilePath" />
+                                        <button type="submit" class="btn-link" title="Slettet (flyt til papirkurv)">Slet</button>
+                                    </form>
                                 </div>
                             </div>
                         </article>

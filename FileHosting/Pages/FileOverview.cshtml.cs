@@ -60,37 +60,15 @@ namespace FileHosting.Pages
             return RedirectToPage();
         }
 
-        // New: redirect to Minio presigned URL so file is delivered directly from storage
-        public async Task<IActionResult> OnGetDownloadAsync(string filePath)
+        // New: soft-delete handler (moves file to wastebasket)
+        public async Task<IActionResult> OnPostSoftDeleteAsync([FromForm] string filePath)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return BadRequest("Missing filePath.");
-            }
+            if (string.IsNullOrEmpty(filePath))
+                return BadRequest();
 
-            // Sanitize object name to prevent path traversal style input
-            filePath = Path.GetFileName(filePath);
-
-            // Lookup metadata by FilePath (object name) and ensure not soft-deleted
-            var meta = await _dbContext.StoredFiles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.FilePath == filePath);
-
-            if (meta == null || meta.IsSoftDeleted)
-            {
-                return NotFound();
-            }
-
-            // Create a presigned URL that includes Content-Disposition with the original filename.
-            var presignedUrl = await _storedFileInfoRepo.GetPresignedDownloadUrlAsync(filePath, meta.Name, TimeSpan.FromMinutes(5));
-            if (string.IsNullOrEmpty(presignedUrl))
-            {
-                return NotFound();
-            }
-
-            // Redirect the client directly to Minio. The browser will download directly from Minio
-            // (no streaming through the app memory).
-            return Redirect(presignedUrl);
+            await _storedFileInfoRepo.SoftDeleteAsync(filePath);
+            return RedirectToPage();
         }
+       
     }
 }
