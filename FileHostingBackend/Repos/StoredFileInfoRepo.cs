@@ -130,11 +130,11 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public async Task PermanentlyDeleteAsync(string fileName)
-        {
-            // Reuse existing permanent delete logic
-            await DeleteFileAsync(fileName);
-        }
+        //public async Task PermanentlyDeleteAsync(string fileName)
+        //{
+        //    // Reuse existing permanent delete logic
+        //    await DeleteFileAsync(fileName);
+        //}
 
         public async Task DeleteFileAsync(string fileName)
         {

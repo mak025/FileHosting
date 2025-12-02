@@ -48,9 +48,9 @@ namespace FileHostingBackend.Services
             await _storedFileInfoRepo.RestoreAsync(fileName);
         }
 
-        public async Task PermanentlyDeleteAsync(string fileName)
-        {
-            await _storedFileInfoRepo.PermanentlyDeleteAsync(fileName);
-        }
+        //public async Task PermanentlyDeleteAsync(string fileName)
+        //{
+        //    await _storedFileInfoRepo.PermanentlyDeleteAsync(fileName);
+        //}
     }
 }

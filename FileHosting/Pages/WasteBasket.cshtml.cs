@@ -35,7 +35,7 @@ namespace FileHosting.Pages
         {
             if (string.IsNullOrEmpty(filePath)) return BadRequest();
 
-            await _storedFileInfoRepo.PermanentlyDeleteAsync(filePath);
+            await _storedFileInfoRepo.DeleteFileAsync(filePath);
             return RedirectToPage();
         }
     }

@@ -15,6 +15,6 @@ namespace FileHostingBackend.Repos
         // Required members for wastebasket/restore
         Task<List<StoredFileInfo>> GetDeletedFilesAsync();
         Task RestoreAsync(string fileName);
-        Task PermanentlyDeleteAsync(string fileName);
+        //Task PermanentlyDeleteAsync(string fileName);
     }
 }
