@@ -16,7 +16,6 @@ namespace FileHostingBackend.Repos
         Task<List<StoredFileInfo>> GetAllFilesAsync();
         Task DeleteFileAsync(string fileName);
         Task SoftDeleteAsync (string fileName);
-
-        
+        Task<string> GetPresignedDownloadUrlAsync(string filePath, string downloadFileName, TimeSpan? expiry = null);
     }
 }
