@@ -27,7 +27,6 @@ namespace FileHostingBackend.Services
             return await _storedFileInfoRepo.GetAllFilesAsync();
         }
         
-        }
         public async Task DeleteFileAsync(string fileName)
         {
             await _storedFileInfoRepo.DeleteFileAsync(fileName);

@@ -124,10 +124,9 @@
                     @foreach (var file in Model.Files)
                     {
                         <article class="file-card">
-                            <a asp-page-handler="Download"
-                               asp-route-fileName="@file.Name"
-                               class="file-card-link">
-
+                            <!-- Make the card content non-anchor to avoid nested anchors.
+                                 Add an explicit Download button below that calls the page handler. -->
+                            <div class="file-card-link">
                                 <!-- Thumbnail / preview -->
                                 <div class="@GetFileTypeClass(file.Name)">
                                     @* If it's an image, you can show a real preview if you expose a URL *@
@@ -150,16 +149,28 @@
                                 <div class="file-title" title="@file.Name">
                                     @file.Name
                                 </div>
-                            </a>
+                            </div>
 
                             <!-- Bottom meta row -->
-                            <div class="file-meta">
-                                <div class="file-avatar"></div>
-                                <div class="file-meta-text">
-                                    <div class="file-meta-owner">Åbnet af dig</div>
-                                    <div class="file-meta-date">
-                                        @file.UploadedAt.ToString("d. MMM yyyy")
+                            <div class="file-meta" style="justify-content:space-between; align-items:center;">
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <div class="file-avatar"></div>
+                                    <div class="file-meta-text">
+                                        <div class="file-meta-owner">Åbnet af dig</div>
+                                        <div class="file-meta-date">
+                                            @file.UploadedAt.ToString("d. MMM yyyy")
+                                        </div>
                                     </div>
+                                </div>
+
+                                <!-- Download button: uses the PageModel handler OnGetDownloadAsync(filePath)
+                                     Open in a new tab so the browser downloads directly from Minio. -->
+                                <div>
+                                    <a asp-page-handler="Download"
+                                       asp-route-filePath="@file.FilePath"
+                                       class="btn btn-outline"
+                                       target="_blank"
+                                       rel="noopener">Download</a>
                                 </div>
                             </div>
                         </article>

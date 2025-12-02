@@ -133,6 +133,43 @@ namespace FileHostingBackend.Repos
             }
         }
 
+        // New: produce a presigned GET URL so the client downloads directly from Minio
+        public async Task<string> GetPresignedDownloadUrlAsync(string filePath, string downloadFileName, TimeSpan? expiry = null)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentNullException(nameof(filePath));
+
+            // Default expiry to 5 minutes if not provided
+            var ttl = expiry ?? TimeSpan.FromMinutes(5);
+
+            try
+            {
+                // Response headers tell Minio to override content-disposition/type for this request.
+                // Minio will include these in the signed URL so the server enforces them when the client downloads.
+                var responseHeaders = new Dictionary<string, string>
+                {
+                    // Make the browser treat it as an attachment with the original filename.
+                    ["response-content-disposition"] = $"attachment; filename=\"{downloadFileName}\""
+                };
+
+                // If you want to set content-type explicitly, add:
+                // ["response-content-type"] = "application/octet-stream" or the detected MIME type.
+
+                var presignedArgs = new PresignedGetObjectArgs()
+                    .WithBucket(_bucketName)
+                    .WithObject(filePath)
+                    .WithExpiry((int)ttl.TotalSeconds);
+                    
+
+                // Returns the full presigned URL string.
+                return await _minioClient.PresignedGetObjectAsync(presignedArgs);
+            }
+            catch (MinioException ex)
+            {
+                throw new Exception("Failed to create presigned download URL", ex);
+            }
+        }
+
     }
 }
 
