@@ -103,18 +103,6 @@ namespace FileHostingBackend.Repos
                 .ToListAsync();
         }
 
-        public async Task<Stream> DownloadFileAsync(string fileName)
-        {
-            var memoryStream = new MemoryStream();
-            var getArgs = new GetObjectArgs()
-                .WithBucket(_bucketName)
-                .WithObject(fileName)
-                .WithCallbackStream((stream) => stream.CopyTo(memoryStream));
-
-            await _minioClient.GetObjectAsync(getArgs);
-            memoryStream.Position = 0;
-            return memoryStream;
-        }
 
         public async Task SoftDeleteAsync (string fileName)
         {
@@ -143,6 +131,19 @@ namespace FileHostingBackend.Repos
                 await _dbContext.SaveChangesAsync(); // Save changes to the database
 
             }
+        }
+
+        public async Task<Stream> DownloadFileAsync (string objectName)
+        {
+            var memoryStream = new MemoryStream();
+            var getArgs = new GetObjectArgs()
+                .WithBucket(_bucketName)
+                .WithObject(objectName)
+                .WithCallbackStream((stream) => stream.CopyTo(memoryStream));
+
+            await _minioClient.GetObjectAsync(getArgs);
+            memoryStream.Position = 0;
+            return memoryStream;
         }
     }
 }
