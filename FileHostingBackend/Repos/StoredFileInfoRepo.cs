@@ -11,7 +11,7 @@ using System.Linq;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.IO; // required for Path
 
 namespace FileHostingBackend.Repos
 {
@@ -56,6 +56,7 @@ namespace FileHostingBackend.Repos
                 throw new Exception("Error ensuring bucket exists", ex);
             }
         }
+       
 
         public async Task<string> UploadFileAsync(IFormFile file, User user)
         {
@@ -77,7 +78,6 @@ namespace FileHostingBackend.Repos
 
             var metadata = new StoredFileInfo
             {
-                //ID = fileName,**//
                 Name = Path.GetFileName(file.FileName),
                 Size = (int)file.Length,
                 LastModifiedAt = DateTimeOffset.UtcNow,
@@ -89,12 +89,11 @@ namespace FileHostingBackend.Repos
             };
 
             _dbContext.StoredFiles.Add(metadata);
-            await _dbContext.SaveChangesAsync();   // 👈 important
+            await _dbContext.SaveChangesAsync();
 
             return fileName;
         }
 
-        // I’d base the overview on the DB so we can filter on IsSoftDeleted etc.
         public async Task<List<StoredFileInfo>> GetAllFilesAsync()
         {
             return await _dbContext.StoredFiles
@@ -103,18 +102,38 @@ namespace FileHostingBackend.Repos
                 .ToListAsync();
         }
 
+        public async Task<List<StoredFileInfo>> GetDeletedFilesAsync()
+        {
+            return await _dbContext.StoredFiles
+                .Where(f => f.IsSoftDeleted)
+                .OrderByDescending(f => f.UploadedAt)
+                .ToListAsync();
+        }
 
         public async Task SoftDeleteAsync(string fileName)
         {
-
-            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
-            if (metadata != null) // If metadata exists, mark it as deleted
+            var metadata = await _dbContext.StoredFiles.FirstOrDefaultAsync(f => f.FilePath == fileName);
+            if (metadata != null)
             {
-                metadata.IsSoftDeleted = true; // Mark as deleted
-                await _dbContext.SaveChangesAsync(); // Save changes to the database
+                metadata.IsSoftDeleted = true;
+                await _dbContext.SaveChangesAsync();
             }
+        }
 
+        public async Task RestoreAsync(string fileName)
+        {
+            var metadata = await _dbContext.StoredFiles.FirstOrDefaultAsync(f => f.FilePath == fileName);
+            if (metadata != null && metadata.IsSoftDeleted)
+            {
+                metadata.IsSoftDeleted = false;
+                await _dbContext.SaveChangesAsync();
+            }
+        }
 
+        public async Task PermanentlyDeleteAsync(string fileName)
+        {
+            // Reuse existing permanent delete logic
+            await DeleteFileAsync(fileName);
         }
 
         public async Task DeleteFileAsync(string fileName)
@@ -124,18 +143,15 @@ namespace FileHostingBackend.Repos
                 .WithObject(fileName);
             await _minioClient.RemoveObjectAsync(deleteArgs);
 
-            var metadata = _dbContext.StoredFiles.FirstOrDefault(f => f.FilePath == fileName); // Find metadata by file path
-            if (metadata != null) // If metadata exists, remove it from the database
+            var metadata = await _dbContext.StoredFiles.FirstOrDefaultAsync(f => f.FilePath == fileName);
+            if (metadata != null)
             {
-                _dbContext.StoredFiles.Remove(metadata); // Remove metadata
-                await _dbContext.SaveChangesAsync(); // Save changes to the database
-
+                _dbContext.StoredFiles.Remove(metadata);
+                await _dbContext.SaveChangesAsync();
             }
         }
-
     }
 }
-
 
     
 

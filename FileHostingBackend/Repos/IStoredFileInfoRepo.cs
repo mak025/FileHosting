@@ -1,12 +1,7 @@
 ﻿using FileHostingBackend.Models;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-
 
 namespace FileHostingBackend.Repos
 {
@@ -15,8 +10,11 @@ namespace FileHostingBackend.Repos
         Task<string> UploadFileAsync(IFormFile file, User user);
         Task<List<StoredFileInfo>> GetAllFilesAsync();
         Task DeleteFileAsync(string fileName);
-        Task SoftDeleteAsync (string fileName);
+        Task SoftDeleteAsync(string fileName);
 
-        
+        // Required members for wastebasket/restore
+        Task<List<StoredFileInfo>> GetDeletedFilesAsync();
+        Task RestoreAsync(string fileName);
+        Task PermanentlyDeleteAsync(string fileName);
     }
 }

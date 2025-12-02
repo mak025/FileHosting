@@ -59,10 +59,15 @@ namespace FileHosting.Pages
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnGetDownloadAsync(string fileName)
+        // New: soft-delete handler (moves file to wastebasket)
+        public async Task<IActionResult> OnPostSoftDeleteAsync([FromForm] string filePath)
         {
-            var stream = await _storedFileInfoRepo.DownloadFileAsync(fileName);
-            return File(stream, "application/octet-stream", fileName);
+            if (string.IsNullOrEmpty(filePath))
+                return BadRequest();
+
+            await _storedFileInfoRepo.SoftDeleteAsync(filePath);
+            return RedirectToPage();
         }
+       
     }
 }
