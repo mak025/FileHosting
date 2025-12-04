@@ -1,0 +1,33 @@
+﻿@page
+@model FileHosting.Pages.UserOverviewModel
+@{
+    ViewData["Title"] = "Brugere";
+}
+
+<h1>Brugere</h1>
+<p>Liste over alle brugere i systemet.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>Type</th>
+            <th>Fagforening</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Type</td>   @* du kan evt. mappe enum til tekst *@
+                <td>@user.Union?.UnionName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
