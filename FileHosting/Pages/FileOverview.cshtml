@@ -73,7 +73,7 @@
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN CONTENT -->     
         <main class="content-area">
             <header class="content-header">
                 <div>
@@ -82,6 +82,15 @@
                 <div class="header-actions">
                     <button class="btn btn-primary">+ Ny</button>
                 </div>
+                <form method="get">
+                    <input type="text" name="search" placeholder="Søg i filer..." value="@Request.Query["search"]" />
+                    <button type="submit" class="btn-outline">Søg</button>
+                </form>
+
+
+
+               
+
             </header>
 
             <!-- TOOLBAR -->

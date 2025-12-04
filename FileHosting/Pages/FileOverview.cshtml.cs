@@ -29,6 +29,15 @@ namespace FileHosting.Pages
         public async Task OnGetAsync()
         {
             Files = await _storedFileInfoRepo.GetAllFilesAsync();
+
+            var searchQuery = Request.Query["search"].ToString(); // New: get search query from URL
+            if (!string.IsNullOrEmpty(searchQuery)) // New: filter files based on search query
+            {
+                Files = Files 
+                    .Where(f => f.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)) // New: case-insensitive search
+                    .ToList(); 
+            }
+
         }
 
         public async Task<IActionResult> OnPostUploadAsync()
