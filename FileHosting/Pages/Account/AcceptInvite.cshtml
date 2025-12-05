@@ -11,37 +11,37 @@
     {
         <div class="status error">@Model.ErrorMessage</div>
     }
-    else
-    {
-        <form method="post" class="form-compact">
-            <input type="hidden" asp-for="Input.Token" />
-            <div class="field">
-                <label asp-for="Input.Email">Email</label>
-                <input asp-for="Input.Email" class="form-control" readonly />
-            </div>
 
-            <div class="field">
-                <label asp-for="Input.Name">Full name</label>
-                <input asp-for="Input.Name" class="form-control" />
-                <span asp-validation-for="Input.Name" class="validation-msg"></span>
-            </div>
+    <form method="post" class="form-compact">
+        <div asp-validation-summary="All" class="validation-msg"></div>
 
-            <div class="field">
-                <label asp-for="Input.Address">Address</label>
-                <input asp-for="Input.Address" class="form-control" />
-            </div>
+        <input type="hidden" asp-for="Input.Token" />
+        <div class="field">
+            <label asp-for="Input.Email">Email</label>
+            <input asp-for="Input.Email" class="form-control" readonly />
+        </div>
 
-            <div class="field">
-                <label asp-for="Input.PhoneNumber">Phone</label>
-                <input asp-for="Input.PhoneNumber" class="form-control" />
-            </div>
+        <div class="field">
+            <label asp-for="Input.Name">Full name</label>
+            <input asp-for="Input.Name" class="form-control" />
+            <span asp-validation-for="Input.Name" class="validation-msg"></span>
+        </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Create account</button>
-                <a class="btn btn-ghost" asp-page="/Account/Login">Sign in</a>
-            </div>
-        </form>
-    }
+        <div class="field">
+            <label asp-for="Input.Address">Address</label>
+            <input asp-for="Input.Address" class="form-control" />
+        </div>
+
+        <div class="field">
+            <label asp-for="Input.PhoneNumber">Phone</label>
+            <input asp-for="Input.PhoneNumber" class="form-control" />
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Create account</button>
+            <a class="btn btn-ghost" asp-page="/Account/Login">Sign in</a>
+        </div>
+    </form>
 </section>
 
 @section Scripts {

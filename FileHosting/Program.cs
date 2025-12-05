@@ -19,14 +19,15 @@ namespace FileHosting
             // Add services to the container.
             builder.Services.AddRazorPages();
 
-            // Example: configure EF Core DbContext (use your connection string or configuration)
-            var connectionString = "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
+            // Default hard-coded fallback connection string (kept for compatibility)
+            var fallbackConnectionString = "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
+
+            // Prefer configuration value from appsettings.json: "ConnectionStrings:DefaultConnection"
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? fallbackConnectionString;
+
+            // Configure EF Core DbContext with the resolved connection string
             builder.Services.AddDbContext<FileHostDBContext>(options =>
                 options.UseSqlServer(connectionString));
-
-
-
-
 
             // Authentication - cookie based
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -36,8 +37,6 @@ namespace FileHosting
                     options.AccessDeniedPath = "/Account/AccessDenied";
                 });
 
-
-
             // Example policy (optional)
             builder.Services.AddAuthorization(options =>
             {
@@ -45,34 +44,25 @@ namespace FileHosting
                     policy.RequireClaim(ClaimTypes.Role, User.UserType.Admin.ToString(), User.UserType.SysAdmin.ToString()));
             });
 
-
-
-
-
-
             // Bind Minio settings from configuration (appsettings.json -> "Minio")
             builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("Minio"));
 
             // Bind Email settings (appsettings.json -> "Email")
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 
-
-
             // Register InviteService and other app services
             builder.Services.AddScoped<InviteService>();
 
-
-
-            // Register repo and service
+            // Register repo and service for files (existing)
             builder.Services.AddScoped<IStoredFileInfoRepo, StoredFileInfoRepo>();
-            // Optionally: builder.Services.AddScoped<StoredFileInfoService();
+
+            // Register IUserRepo using same connection string as DbContext
+            builder.Services.AddScoped<IUserRepo>(sp => new UserRepo(connectionString));
+
+            // Register UserService so it can be injected
+            builder.Services.AddScoped<UserService>();
 
             var app = builder.Build();
-
-
-
-
-
 
             // Auto updates the database on application run and ensure a standard user exists
             using (var scope = app.Services.CreateScope())
@@ -94,21 +84,6 @@ namespace FileHosting
                 }
             }
 
-
-
-
-
-
-            // Auto updates the database on application run
-            using (var scope = app.Services.CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<FileHostDBContext>();
-                dbContext.Database.Migrate();
-            }
-
-
-
-
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -118,7 +93,7 @@ namespace FileHosting
 
             app.UseRouting();
 
-            app.UseAuthentication(); // ADDED: ensure authentication middleware runs before authorization
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();

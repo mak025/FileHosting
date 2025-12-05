@@ -1,11 +1,12 @@
-using System;
+ï»¿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FileHostingBackend.Models;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 
 namespace FileHostingBackend.Services
 {
@@ -54,7 +55,7 @@ namespace FileHostingBackend.Services
             var msg = new MimeMessage();
             msg.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
             msg.To.Add(MailboxAddress.Parse(toEmail));
-            msg.Subject = "You're invited — create your account";
+            msg.Subject = "You're invited ï¿½ create your account";
 
             var body = $@"
                 <p>Hello,</p>
@@ -71,6 +72,9 @@ namespace FileHostingBackend.Services
             await smtp.DisconnectAsync(true);
         }
 
+        /// <summary>
+        /// Validate the token payload (unprotect + check expiry). Returns (success, email, reason).
+        /// </summary>
         public (bool success, string email, string reason) ValidateToken(string urlEncodedToken)
         {
             try
@@ -96,6 +100,34 @@ namespace FileHostingBackend.Services
             catch (Exception ex)
             {
                 return (false, string.Empty, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Atomically mark an invite as used if it exists, matches the email and is not expired/used.
+        /// Accepts the URL-encoded token (same value sent in the invite link).
+        /// Returns (success, reason).
+        /// </summary>
+        public async Task<(bool success, string reason)> TryConsumeInviteAsync(string urlEncodedToken, string email)
+        {
+            try
+            {
+                var protectedToken = System.Web.HttpUtility.UrlDecode(urlEncodedToken);
+                var invite = _db.Invites.FirstOrDefault(i => i.Token == protectedToken && i.Email == email && !i.Used);
+                if (invite == null)
+                    return (false, "Invite not found or already used.");
+
+                if (invite.ExpiresAt < DateTimeOffset.UtcNow)
+                    return (false, "Invite expired.");
+
+                invite.Used = true;
+                await _db.SaveChangesAsync();
+
+                return (true, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.Message);
             }
         }
     }

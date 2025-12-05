@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
 
 namespace FileHosting.Pages.Account
 {
@@ -17,12 +18,14 @@ namespace FileHosting.Pages.Account
     public class AcceptInviteModel : PageModel
     {
         private readonly InviteService _inviteService;
-        private readonly FileHostDBContext _dbContext;
+        private readonly UserService _userService;
+        private readonly ILogger<AcceptInviteModel> _logger;
 
-        public AcceptInviteModel(InviteService inviteService, FileHostDBContext dbContext)
+        public AcceptInviteModel(InviteService inviteService, UserService userService, ILogger<AcceptInviteModel> logger)
         {
             _inviteService = inviteService;
-            _dbContext = dbContext;
+            _userService = userService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -76,46 +79,49 @@ namespace FileHosting.Pages.Account
             if (!validation.success || !string.Equals(validation.email, Input.Email, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(string.Empty, "Invalid or expired invite token.");
+                ErrorMessage = "Invalid or expired invite token.";
                 return Page();
             }
 
-            // Check invite record and mark used
-            var invite = _dbContext.Invites.FirstOrDefault(i => i.Token == Input.Token && i.Email == Input.Email && !i.Used);
-            if (invite == null || invite.ExpiresAt < DateTimeOffset.UtcNow)
+            _logger.LogInformation("AcceptInvite: attempting to consume invite for {Email}", Input.Email);
+
+            // Use InviteService to atomically mark the invite used
+            var consumeResult = await _inviteService.TryConsumeInviteAsync(Input.Token, Input.Email);
+            if (!consumeResult.success)
             {
-                ModelState.AddModelError(string.Empty, "Invite either used or expired.");
+                ModelState.AddModelError(string.Empty, "Invite either used or expired. " + consumeResult.reason);
+                ErrorMessage = "Invite either used or expired. " + consumeResult.reason;
+                _logger.LogWarning("AcceptInvite: failed to consume invite for {Email}: {Reason}", Input.Email, consumeResult.reason);
                 return Page();
             }
 
-            // Ensure a union exists; use first or create default
-            var union = _dbContext.Union.FirstOrDefault();
-            if (union == null)
+            _logger.LogInformation("AcceptInvite: invite consumed, creating user {Email}", Input.Email);
+
+            // Create user through the service/repo layer.
+            try
             {
-                union = new Union { UnionName = "DefaultUnion" };
-                _dbContext.Add(union);
-                await _dbContext.SaveChangesAsync();
+                _userService.CreateUser(
+                    Input.Name,
+                    Input.Email,
+                    Input.Address ?? string.Empty,
+                    Input.PhoneNumber ?? string.Empty,
+                    null,
+                    0 // Member role
+                );
+            }
+            catch (Exception ex)
+            {
+                // Log the exception and surface it to the page
+                _logger.LogError(ex, "Failed to create user for invite {Email}", Input.Email);
+                ModelState.AddModelError(string.Empty, "Failed to create user: " + ex.Message);
+                ErrorMessage = "Failed to create user: " + ex.Message;
+                return Page();
             }
 
-            // Create member and save
-            var member = new Member(Input.Name, Input.Email, Input.Address ?? string.Empty, Input.PhoneNumber ?? string.Empty, union);
-            _dbContext.Add(member);
+            _logger.LogInformation("AcceptInvite: user created successfully for {Email}", Input.Email);
 
-            invite.Used = true;
-            await _dbContext.SaveChangesAsync();
-
-            // Optional: sign them in immediately
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, member.Name ?? member.Email),
-                new Claim(ClaimTypes.NameIdentifier, member.ID.ToString()),
-                new Claim(ClaimTypes.Email, member.Email ?? string.Empty),
-                new Claim(ClaimTypes.Role, member.Type.ToString())
-            };
-            var identity = new System.Security.Claims.ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new System.Security.Claims.ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return LocalRedirect("/");
+            // Redirect user to login page to sign in
+            return LocalRedirect("/Account/Login");
         }
     }
 }
