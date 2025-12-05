@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace FileHostingBackend.Services
+namespace FileHostingBackend.Repos
 {
-    public class InviteService
+    public class InviteRepo
     {
         private readonly FileHostDBContext _db;
         private readonly IDataProtector _protector;
         private readonly EmailSettings _emailSettings;
 
-        public InviteService(FileHostDBContext db, IDataProtectionProvider dpProvider, IOptions<EmailSettings> emailOptions)
+        public InviteRepo(FileHostDBContext db, IDataProtectionProvider dpProvider, IOptions<EmailSettings> emailOptions)
         {
             _db = db;
             _protector = dpProvider.CreateProtector("InviteTokens.v1");

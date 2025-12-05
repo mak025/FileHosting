@@ -11,17 +11,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using FileHostingBackend.Repos;
 
 namespace FileHosting.Pages.Account
 {
     [AllowAnonymous]
     public class AcceptInviteModel : PageModel
     {
-        private readonly InviteService _inviteService;
+        private readonly InviteRepo _inviteService;
         private readonly UserService _userService;
         private readonly ILogger<AcceptInviteModel> _logger;
 
-        public AcceptInviteModel(InviteService inviteService, UserService userService, ILogger<AcceptInviteModel> logger)
+        public AcceptInviteModel(InviteRepo inviteService, UserService userService, ILogger<AcceptInviteModel> logger)
         {
             _inviteService = inviteService;
             _userService = userService;

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using FileHostingBackend.Services;
+using FileHostingBackend.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,9 +12,9 @@ namespace FileHosting.Pages.Admin
     [Authorize(Policy = "AdminOnly")]
     public class InviteMemberModel : PageModel
     {
-        private readonly InviteService _inviteService;
+        private readonly InviteRepo _inviteService;
 
-        public InviteMemberModel(InviteService inviteService)
+        public InviteMemberModel(InviteRepo inviteService)
         {
             _inviteService = inviteService;
         }

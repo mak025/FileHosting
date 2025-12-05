@@ -51,7 +51,7 @@ namespace FileHosting
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 
             // Register InviteService and other app services
-            builder.Services.AddScoped<InviteService>();
+            builder.Services.AddScoped<InviteRepo>();
 
             // Register repo and service for files (existing)
             builder.Services.AddScoped<IStoredFileInfoRepo, StoredFileInfoRepo>();

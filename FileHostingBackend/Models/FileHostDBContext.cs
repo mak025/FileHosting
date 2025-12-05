@@ -31,7 +31,7 @@ namespace FileHostingBackend.Models
         public FileHostDBContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<FileHostDBContext>();
-            optionsBuilder.UseSqlServer();
+            optionsBuilder.UseSqlServer(); // Empty as the system should reference the FIleHostDBConetextModelSnapshop rather than a running database = code first 
             return new FileHostDBContext(optionsBuilder.Options);
         }
     }
