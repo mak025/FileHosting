@@ -70,8 +70,8 @@ namespace FileHostingBackend.Repos
                     "INSERT INTO Users (Name, Email, Address, PhoneNumber, UnionId, Type, Discriminator) " +
                     "VALUES (@Name, @Email, @Address, @PhoneNumber, @UnionId, @Type, @Discriminator);", connection, transaction);
 
-                cmdUser.Parameters.AddWithValue("@Name", name ?? string.Empty);
-                cmdUser.Parameters.AddWithValue("@Email", email ?? string.Empty);
+                cmdUser.Parameters.AddWithValue("@Name", name);
+                cmdUser.Parameters.AddWithValue("@Email", email);
                 cmdUser.Parameters.AddWithValue("@Address", address ?? string.Empty);
                 cmdUser.Parameters.AddWithValue("@PhoneNumber", phoneNumber ?? string.Empty);
                 cmdUser.Parameters.AddWithValue("@UnionId", unionId);
