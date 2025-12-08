@@ -455,3 +455,6 @@ body {
     border-radius: 6px;
     text-transform: uppercase;
 }
+.app-shell.single-column {
+    grid-template-columns: minmax(0, 1fr);
+}
