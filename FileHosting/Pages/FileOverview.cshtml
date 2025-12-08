@@ -27,181 +27,111 @@
     }
 }
 
-<h1>Filer</h1>
-<p>This is the FileOverview page.</p>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Files</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="~/css/site.css" />
-</head>
-<body>
-    <div class="app-shell">
+<section class="file-overview">
 
-        <!-- LEFT ICON SIDEBAR -->
-        <aside class="sidebar-main">
-            <div class="sidebar-main-top">
-                <div class="logo-circle"></div>
+    <!-- Header -->
+    <header class="content-header">
+        <div class="content-header-left">
+            <h1>Alle filer</h1>
+            <p class="content-subtitle">Oversigt over alle uploadede filer.</p>
+        </div>
 
-                <nav class="main-nav">                        
-                </nav>
-            </div>
+        <div class="content-header-right">
+            <form method="get" class="search-form">
+                <input type="text"
+                       name="search"
+                       placeholder="Søg i filer..."
+                       value="@Request.Query["search"]"
+                       class="search-input" />
+                <button type="submit" class="btn btn-outline">Søg</button>
+            </form>
+           
+        </div>
+    </header>
 
-            <div class="sidebar-main-bottom">
-            </div>
-        </aside>
+    <!-- FILE GRID -->
+    <section class="file-grid">
+        @if (Model.Files != null && Model.Files.Any())
+        {
+            @foreach (var file in Model.Files)
+            {
+                <article class="file-card">
+                    <div class="file-card-link">
+                        <!-- Thumbnail -->
+                        <div class="@GetFileTypeClass(file.Name)">
+                            <span class="file-icon-label">
+                                @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
+                            </span>
+                        </div>
 
-        <!-- SECONDARY SIDEBAR -->
-        <aside class="sidebar-secondary">
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Start</h3>
-                <ul class="sidebar-list">
-                    <li><a asp-page="/Wastebasket">PapirKurv</a></li>
-                    <li><a asp-page="/UserOverview">Brugere</a></li>
-                </ul>
-            </div>
-
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">Hurtig adgang</h3>
-                <ul class="sidebar-list">
-                </ul>
-            </div>
-
-            <div class="sidebar-section sidebar-bottom-card">
-                <p>Træk vigtige elementer hertil.</p>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->     
-        <main class="content-area">
-            <header class="content-header">
-                <div>
-                    <h1>Alle filer</h1>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-primary">+ Ny</button>
-                </div>
-                <form method="get">
-                    <input type="text" name="search" placeholder="Søg i filer..." value="@Request.Query["search"]" />
-                    <button type="submit" class="btn-outline">Søg</button>
-                </form>
-
-
-
-               
-
-            </header>
-
-            <!-- TOOLBAR -->
-            <div class="content-toolbar">
-                <div class="toolbar-left">
-                    <button class="btn-link active">Seneste</button>
-                    <button class="btn-link">Stjernemarkeret</button>
-                    <button class="btn-link">Type</button>
-                    <button class="btn-link">Filtype</button>
-                </div>
-                <div class="toolbar-right">
-                    <button class="btn-outline">Upload</button>
-                    <button class="btn-outline">Ny mappe</button>
-                    <button class="btn-outline">Åbn app</button>
-                </div>
-            </div>
-
-            <!-- FILE GRID (Drive-like) -->
-            <section class="file-grid">
-                @if (Model.Files != null && Model.Files.Any())
-                {
-                    @foreach (var file in Model.Files)
-                    {
-                        <article class="file-card">
-                            <!-- Make the card content non-anchor to avoid nested anchors.
-                                 Add an explicit Download button below that calls the page handler. -->
-                            <div class="file-card-link">
-                                <!-- Thumbnail / preview -->
-                                <div class="@GetFileTypeClass(file.Name)">
-                                    @* If it's an image, you can show a real preview if you expose a URL *@
-                                    @if (System.IO.Path.GetExtension(file.Name).ToLower() is ".png" or ".jpg" or ".jpeg" or ".gif")
-                                    {
-                                        <!-- replace src with your own image-serving endpoint if you have one -->
-                                        <span class="file-icon-label">
-                                            @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="file-icon-label">
-                                            @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
-                                        </span>
-                                    }
-                                </div>
-
-                                <!-- File name -->
-                                <div class="file-title" title="@file.Name">
-                                    @file.Name
-                                </div>
-                            </div>
-
-                            <!-- Bottom meta row -->
-                            <div class="file-meta" style="justify-content:space-between; align-items:center;">
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <div class="file-avatar"></div>
-                                    <div class="file-meta-text">
-                                        <div class="file-meta-owner">Åbnet af dig</div>
-                                        <div class="file-meta-date">
-                                            @file.UploadedAt.ToString("d. MMM yyyy")
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Download button: uses the PageModel handler OnGetDownloadAsync(filePath)
-                                     Open in a new tab so the browser downloads directly from Minio. -->
-                                <div>
-                                    <a asp-page-handler="Download"
-                                       asp-route-filePath="@file.FilePath"
-                                       class="btn btn-outline"
-                                       target="_blank"
-                                       rel="noopener">Download</a>
-                                </div>
-
-                                <!-- Actions: Soft-delete (move to wastebasket) -->
-                                <div class="file-actions" style="margin-left: auto;">
-                                    <form method="post" asp-page-handler="SoftDelete">
-                                        <input type="hidden" name="filePath" value="@file.FilePath" />
-                                        <button type="submit" class="btn-link" title="Slettet (flyt til papirkurv)">Slet</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </article>
-                    }
-                }
-                else
-                {
-                    <p>Ingen filer endnu.</p>
-                }
-            </section>
-
-            <!-- UPLOAD SECTION -->
-            <section class="upload-section" style="margin-top: 40px;">
-                <h2>Upload filer</h2>
-
-                <form method="post" enctype="multipart/form-data" asp-page-handler="Upload">
-                    <input type="file" name="Upload" />
-                    <button type="submit" class="btn btn-primary">Upload</button>
-                </form>
-
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="validation-errors">
-                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                        {
-                            <p style="color:red">@error.ErrorMessage</p>
-                        }
+                        <!-- FileName -->
+                        <div class="file-title" title="@file.Name">
+                            @file.Name
+                        </div>
                     </div>
+
+                   
+                    <div class="file-meta" style="justify-content: space-between; width: 100%;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div class="file-avatar"></div>
+                            <div class="file-meta-text">
+                                <div class="file-meta-owner">Åbnet af dig</div>
+                                <div class="file-meta-date">
+                                    @file.UploadedAt.ToString("d. MMM yyyy")
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <a asp-page-handler="Download"
+                               asp-route-filePath="@file.FilePath"
+                               class="btn btn-outline"
+                               target="_blank"
+                               rel="noopener">
+                                Download
+                            </a>
+
+                            <form method="post"
+                                  asp-page-handler="SoftDelete"
+                                  class="inline-form">
+                                <input type="hidden" name="filePath" value="@file.FilePath" />
+                                <button type="submit"
+                                        class="btn-link"
+                                        title="Slet (flyt til papirkurv)">
+                                    Slet
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+        else
+        {
+            <p>Ingen filer endnu.</p>
+        }
+    </section>
+
+    <!-- UPLOAD SECTION -->
+    <section class="upload-section">
+        <h2>Upload filer</h2>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              asp-page-handler="Upload"
+              class="upload-form">
+            <input type="file" name="Upload" class="upload-input" />
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="validation-errors">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p class="validation-error">@error.ErrorMessage</p>
                 }
-            </section>
-        </main>
-    </div>
-</body>
-</html>
+            </div>
+        }
+    </section>
+</section>

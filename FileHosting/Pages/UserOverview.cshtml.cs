@@ -33,5 +33,21 @@ namespace FileHosting.Pages
                             .OrderBy(u => u.Name)
                             .ToListAsync();
         }
+
+        // Deletes a user by id and redirects back to the page
+        public async Task<IActionResult> OnPostDeleteAsync([FromForm] int userId)
+        {
+            if (userId <= 0)
+                return BadRequest();
+
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            _dbContext.Users.Remove(user);
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToPage();
+        }
     }
 }
