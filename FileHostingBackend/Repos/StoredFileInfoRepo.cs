@@ -158,16 +158,18 @@ namespace FileHostingBackend.Repos
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
 
+            // Default expiry to 5 minutes if not provided
             int expires = (int)(expiry ?? TimeSpan.FromMinutes(5)).TotalSeconds;
 
             try
             {
+                // args to build download link
                 var args = new PresignedGetObjectArgs()
                     .WithBucket(_bucketName)
                     .WithObject(filePath)
                     .WithExpiry(expires);
 
-                // PresignedGetObjectAsync returns a string URL
+                // PresignedGetObjectAsync returns a string URL - calls Minio SDK to generate download link
                 var url = await _minioClient.PresignedGetObjectAsync(args);
                 return url;
             }
