@@ -150,6 +150,64 @@ namespace FileHostingBackend.Repos
                 await _dbContext.SaveChangesAsync();
             }
         }
+
+        #region Download Function
+        // Prototype: return a presigned URL that the client can use to download directly from Minio
+        public async Task<string> GetPresignedUrlAsync(string filePath, TimeSpan? expiry = null)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException(nameof(filePath));
+
+            int expires = (int)(expiry ?? TimeSpan.FromMinutes(5)).TotalSeconds;
+
+            try
+            {
+                var args = new PresignedGetObjectArgs()
+                    .WithBucket(_bucketName)
+                    .WithObject(filePath)
+                    .WithExpiry(expires);
+
+                // PresignedGetObjectAsync returns a string URL
+                var url = await _minioClient.PresignedGetObjectAsync(args);
+                return url;
+            }
+            catch (MinioException ex)
+            {
+                throw new Exception("Error creating presigned URL", ex);
+            }
+        }
+
+        // New: server-side streaming helper that returns a MemoryStream and content-type
+        public async Task<(Stream Stream, string ContentType)> GetObjectWithContentTypeAsync(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException(nameof(filePath));
+
+            var ms = new MemoryStream();
+
+            try
+            {
+                var statArgs = new StatObjectArgs().WithBucket(_bucketName).WithObject(filePath);
+                var stat = await _minioClient.StatObjectAsync(statArgs);
+
+                var getArgs = new GetObjectArgs()
+                    .WithBucket(_bucketName)
+                    .WithObject(filePath)
+                    .WithCallbackStream((stream) => stream.CopyTo(ms));
+
+                await _minioClient.GetObjectAsync(getArgs);
+
+                ms.Position = 0;
+                var contentType = stat?.ContentType ?? "application/octet-stream";
+                return (ms, contentType);
+            }
+            catch (MinioException ex)
+            {
+                ms.Dispose();
+                throw new Exception("Error downloading object from Minio", ex);
+            }
+        }
+        #endregion
     }
 }
 

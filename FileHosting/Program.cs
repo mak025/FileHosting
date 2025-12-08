@@ -55,6 +55,7 @@ namespace FileHosting
 
             // Register repo and service for files (existing)
             builder.Services.AddScoped<IStoredFileInfoRepo, StoredFileInfoRepo>();
+            builder.Services.AddScoped<StoredFileInfoService>();
 
             // Register IUserRepo using same connection string as DbContext
             builder.Services.AddScoped<IUserRepo>(sp => new UserRepo(connectionString));

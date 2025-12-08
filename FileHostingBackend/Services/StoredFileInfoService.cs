@@ -52,5 +52,19 @@ namespace FileHostingBackend.Services
         //{
         //    await _storedFileInfoRepo.PermanentlyDeleteAsync(fileName);
         //}
+
+        #region Download Function
+        // Prototype wrapper: get presigned download URL from the repo
+        public async Task<string> GetDownloadUrlAsync(string filePath, TimeSpan? expiry = null)
+        {
+            return await _storedFileInfoRepo.GetPresignedUrlAsync(filePath, expiry);
+        }
+
+        // New: wrapper for server-side streaming download
+        public async Task<(System.IO.Stream Stream, string ContentType)> GetObjectWithContentTypeAsync(string filePath)
+        {
+            return await _storedFileInfoRepo.GetObjectWithContentTypeAsync(filePath);
+        }
+        #endregion
     }
 }

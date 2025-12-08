@@ -16,5 +16,15 @@ namespace FileHostingBackend.Repos
         Task<List<StoredFileInfo>> GetDeletedFilesAsync();
         Task RestoreAsync(string fileName);
         //Task PermanentlyDeleteAsync(string fileName);
+
+
+
+        #region Download Function
+        // Prototype: get a presigned URL for direct download from storage
+        Task<string> GetPresignedUrlAsync(string filePath, TimeSpan? expiry = null);
+
+        // New: retrieve object as a stream plus content-type (for server-side streaming download)
+        Task<(System.IO.Stream Stream, string ContentType)> GetObjectWithContentTypeAsync(string filePath);
+        #endregion
     }
 }
