@@ -23,7 +23,7 @@ namespace FileHostingBackend.Repos
             _emailSettings = emailOptions.Value;
         }
 
-        public async Task<string> CreateAndSendInviteAsync(string email, int invitedByUserId, string baseUrl, TimeSpan validFor)
+        public async Task<string> CreateAndSendInviteAsync(User user, string email, int invitedByUserId, string baseUrl, TimeSpan validFor)
         {
             var expires = DateTimeOffset.UtcNow.Add(validFor);
             // Create a token payload and protect it
@@ -34,10 +34,10 @@ namespace FileHostingBackend.Repos
 
             var invite = new Invite
             {
-                Email = email,
+                Email = user,
                 Token = protectedToken,
                 ExpiresAt = expires,
-                InvitedById = invitedByUserId,
+                InvitedById = user,
             };
 
             _db.Add(invite);
@@ -111,12 +111,12 @@ namespace FileHostingBackend.Repos
         /// Accepts the URL-encoded token (same value sent in the invite link).
         /// Returns (success, reason).
         /// </summary>
-        public async Task<(bool success, string reason)> TryConsumeInviteAsync(string urlEncodedToken, string email)
+        public async Task<(bool success, string reason)> TryConsumeInviteAsync(User user, string urlEncodedToken, string email)
         {
             try
             {
                 var protectedToken = System.Web.HttpUtility.UrlDecode(urlEncodedToken);
-                var invite = _db.Invites.FirstOrDefault(i => i.Token == protectedToken && i.Email == email && !i.Used);
+                var invite = _db.Invites.FirstOrDefault(i => i.Token == protectedToken && i.Email == user && !i.Used);
                 if (invite == null)
                     return (false, "Invite not found or already used.");
 
