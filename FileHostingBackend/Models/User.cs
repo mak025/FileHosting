@@ -17,6 +17,7 @@ namespace FileHostingBackend.Models
             Admin = 800,
             SysAdmin = 900
         }
+
         public int ID { get; private set; }
         public string Name { get; set; }
         public string Email { get; set; }
