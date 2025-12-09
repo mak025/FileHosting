@@ -61,13 +61,15 @@ namespace FileHostingBackend.Repos
         public async Task<string> UploadFileAsync(IFormFile file, User user)
         {
             if (file == null || file.Length == 0)
+            {
                 throw new ArgumentNullException(nameof(file));
+            }
 
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
 
-            using var stream = file.OpenReadStream();
+            using var stream = file.OpenReadStream(); // scope
 
-            var putArgs = new PutObjectArgs()
+            var putArgs = new PutObjectArgs() // research builder patterns
                 .WithBucket(_bucketName)
                 .WithObject(fileName)
                 .WithStreamData(stream)

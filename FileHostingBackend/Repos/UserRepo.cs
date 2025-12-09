@@ -17,7 +17,7 @@ namespace FileHostingBackend.Repos
             _connectionString = connectionString;
         }
 
-        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType)
+        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType) // rewrite using EFCore - dbcontext.beigntransaction
         {
             // Opens the connection to the SQL Server
             using var connection = new SqlConnection(_connectionString);
@@ -45,7 +45,7 @@ namespace FileHostingBackend.Repos
                         }
                         else
                         {
-                            // create a default union and return its id
+                            // create a default union and return its id | Use EFCore for creating new admin if none exists.
                             using var cmdInsertUnion = new SqlCommand("INSERT INTO [Union] (UnionName) VALUES (@Name); SELECT SCOPE_IDENTITY();", connection, transaction);
                             cmdInsertUnion.Parameters.AddWithValue("@Name", "DefaultUnion");
                             var inserted = cmdInsertUnion.ExecuteScalar();

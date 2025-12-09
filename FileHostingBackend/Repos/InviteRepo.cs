@@ -55,13 +55,16 @@ namespace FileHostingBackend.Repos
             var msg = new MimeMessage();
             msg.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
             msg.To.Add(MailboxAddress.Parse(toEmail));
-            msg.Subject = "You're invited � create your account";
+            msg.Subject = "Du er inviteret! � Opret din konto";
 
             var body = $@"
-                <p>Hello,</p>
-                <p>You have been invited to sign up. Click the link below to accept the invitation:</p>
-                <p><a href=""{acceptUrl}"">Accept invitation</a></p>
-                <p>If you did not expect this, ignore this email.</p>";
+                <p>Hej!,</p>
+                <p>Du er blevet inviteret til at oprette dig. Tryk på linket nedenunder for at acceptere invitationen:</p>
+                <p><a href=""{acceptUrl}"">Accepter invitation</a></p>
+                <p>Hvis du mener denne mail er en fejl eller den ikke er relevant for dig,</p>
+                <p>kan du blot ignorere den.</p>
+                <p></p>
+                <p>FileHosting | Din Forening</p>";
 
             msg.Body = new BodyBuilder { HtmlBody = body }.ToMessageBody();
 
