@@ -21,8 +21,9 @@ namespace FileHosting.Pages
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
+        // Bind a collection so multiple files can be uploaded
         [BindProperty]
-        public IFormFile Upload { get; set; }
+        public List<IFormFile> Upload { get; set; } = new();
 
         public List<StoredFileInfo> Files { get; set; } = new();
 
@@ -41,9 +42,9 @@ namespace FileHosting.Pages
 
         public async Task<IActionResult> OnPostUploadAsync()
         {
-            if (Upload == null || Upload.Length == 0)
+            if (Upload == null || !Upload.Any() || Upload.All(f => f == null || f.Length == 0))
             {
-                ModelState.AddModelError("Upload", "Please select a file");
+                ModelState.AddModelError("Upload", "Please select at least one file");
                 return Page();
             }
 
@@ -61,7 +62,24 @@ namespace FileHosting.Pages
                 return Page();
             }
 
-            await _storedFileInfoService.UploadFileAsync(Upload, user);
+            try
+            {
+                // Upload each selected file
+                foreach (var file in Upload)
+                {
+                    if (file == null || file.Length == 0)
+                        continue;
+
+                    await _storedFileInfoService.UploadFileAsync(file, user);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or add a model error so the user sees a failure
+                ModelState.AddModelError("", "Failed to upload files: " + ex.Message);
+                return Page();
+            }
+
             return RedirectToPage();
         }
 
