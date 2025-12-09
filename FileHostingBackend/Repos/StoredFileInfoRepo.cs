@@ -68,15 +68,17 @@ namespace FileHostingBackend.Repos
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
 
             using var stream = file.OpenReadStream(); // scope
+            {
+                var putArgs = new PutObjectArgs() // research builder patterns
+                    .WithBucket(_bucketName)
+                    .WithObject(fileName)
+                    .WithStreamData(stream)
+                    .WithObjectSize(file.Length)
+                    .WithContentType(file.ContentType);
 
-            var putArgs = new PutObjectArgs() // research builder patterns
-                .WithBucket(_bucketName)
-                .WithObject(fileName)
-                .WithStreamData(stream)
-                .WithObjectSize(file.Length)
-                .WithContentType(file.ContentType);
-
-            await _minioClient.PutObjectAsync(putArgs);
+                await _minioClient.PutObjectAsync(putArgs);
+            }
+         
 
             var metadata = new StoredFileInfo
             {
