@@ -23,21 +23,25 @@ namespace FileHostingBackend.Repos
             _emailSettings = emailOptions.Value;
         }
 
-        public async Task<string> CreateAndSendInviteAsync(User user, string email, int invitedByUserId, string baseUrl, TimeSpan validFor)
+        // Signature adjusted to match InviteMember call site
+        public async Task<string> CreateAndSendInviteAsync(string email, int invitedByUserId, string baseUrl, TimeSpan validFor)
         {
             var expires = DateTimeOffset.UtcNow.Add(validFor);
+
             // Create a token payload and protect it
             var payload = $"{email}|{Guid.NewGuid():N}|{expires.ToUnixTimeSeconds()}";
             var protectedToken = _protector.Protect(payload);
-            // Make token URL safe
+
+            // Make token URL safe for the link
             var urlToken = System.Web.HttpUtility.UrlEncode(protectedToken);
 
             var invite = new Invite
             {
-                Email = user,
+                InviteeEmail = email,
                 Token = protectedToken,
                 ExpiresAt = expires,
-                InvitedById = user,
+                InvitedById = invitedByUserId,
+                CreatedAt = DateTimeOffset.UtcNow
             };
 
             _db.Add(invite);
@@ -94,10 +98,6 @@ namespace FileHostingBackend.Repos
                 var expires = DateTimeOffset.FromUnixTimeSeconds(unix);
                 if (DateTimeOffset.UtcNow > expires) return (false, string.Empty, "Token expired");
 
-                // Optionally check DB that token exists and not used
-                // var invite = _db.Set<Invite>().FirstOrDefault(i => i.Token == protectedToken && i.Email == email);
-                // validate invite != null && !invite.Used
-
                 return (true, email, string.Empty);
             }
             catch (Exception ex)
@@ -107,16 +107,21 @@ namespace FileHostingBackend.Repos
         }
 
         /// <summary>
-        /// Atomically mark an invite as used if it exists, matches the email and is not expired/used.
+        /// Atomically mark an invite as used if it exists, matches the invitee email and is not expired/used.
         /// Accepts the URL-encoded token (same value sent in the invite link).
         /// Returns (success, reason).
         /// </summary>
-        public async Task<(bool success, string reason)> TryConsumeInviteAsync(User user, string urlEncodedToken, string email)
+        public async Task<(bool success, string reason)> TryConsumeInviteAsync(string urlEncodedToken, string inviteeEmail)
         {
             try
             {
                 var protectedToken = System.Web.HttpUtility.UrlDecode(urlEncodedToken);
-                var invite = _db.Invites.FirstOrDefault(i => i.Token == protectedToken && i.Email == user && !i.Used);
+
+                var invite = _db.Invites.FirstOrDefault(i =>
+                    i.Token == protectedToken &&
+                    string.Equals(i.InviteeEmail, inviteeEmail, StringComparison.OrdinalIgnoreCase) &&
+                    !i.Used);
+
                 if (invite == null)
                     return (false, "Invite not found or already used.");
 
