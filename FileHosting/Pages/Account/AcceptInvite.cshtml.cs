@@ -87,21 +87,13 @@ namespace FileHosting.Pages.Account
             _logger.LogInformation("AcceptInvite: attempting to consume invite for {Email}", Input.Email);
 
             // Use InviteService to atomically mark the invite used
-            var consumeResult = await _inviteService.TryConsumeInviteAsync(Input.Token, Input.Email);
-            if (!consumeResult.success)
-            {
-                ModelState.AddModelError(string.Empty, "Invite either used or expired. " + consumeResult.reason);
-                ErrorMessage = "Invite either used or expired. " + consumeResult.reason;
-                _logger.LogWarning("AcceptInvite: failed to consume invite for {Email}: {Reason}", Input.Email, consumeResult.reason);
-                return Page();
-            }
-
+            
             _logger.LogInformation("AcceptInvite: invite consumed, creating user {Email}", Input.Email);
 
             // Create user through the service/repo layer.
             try
             {
-                _userService.CreateUserAsync(
+                 await _userService.CreateUserAsync(
                     Input.Name,
                     Input.Email,
                     Input.Address ?? string.Empty,

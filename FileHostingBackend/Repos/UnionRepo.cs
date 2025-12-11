@@ -19,22 +19,27 @@ namespace FileHostingBackend.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<int> GetOrCreateDefaultUnionAsync()
+        public async Task<Union> GetOrCreateDefaultUnionAsync()
         {
             var existingUnion = await _dbContext.Union
                 .OrderBy(u => u.UnionId)
                 .FirstOrDefaultAsync();
-            if (existingUnion == null)
+            
+            if (existingUnion != null)
             {
-                return existingUnion.UnionId;
+                return existingUnion;
             }
-            var deafultUnions = new Union
+            
+            var defaultUnion = new Union
             {
                 UnionName = "DefaultUnion"
             };
-            _dbContext.Union.Add(deafultUnions);
+            
+            _dbContext.Add(defaultUnion);
+            
             await _dbContext.SaveChangesAsync();
-            return existingUnion.UnionId;
+            
+            return defaultUnion;
         }
 
 
