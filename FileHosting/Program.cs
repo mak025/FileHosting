@@ -59,9 +59,12 @@ namespace FileHosting
 
             // Register IUserRepo using same connection string as DbContext
             builder.Services.AddScoped<IUserRepo, UserRepo>();
+
             // Register UserService so it can be injected
             builder.Services.AddScoped<UserService>();
+            //Register Union repo
             builder.Services.AddScoped<IUnionRepo, UnionRepo>();
+            builder.Services.AddScoped<UnionService>();
 
             var app = builder.Build();
 
