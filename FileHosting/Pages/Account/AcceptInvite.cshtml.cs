@@ -101,7 +101,7 @@ namespace FileHosting.Pages.Account
             // Create user through the service/repo layer.
             try
             {
-                _userService.CreateUser(
+                _userService.CreateUserAsync(
                     Input.Name,
                     Input.Email,
                     Input.Address ?? string.Empty,
