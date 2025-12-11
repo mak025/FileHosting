@@ -121,7 +121,7 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
+        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, int userType)
         {
             try
             {
