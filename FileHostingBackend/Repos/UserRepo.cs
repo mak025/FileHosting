@@ -102,31 +102,25 @@ namespace FileHostingBackend.Repos
 
         public void GetUserById(int userId)
         {
-            using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("SELECT * FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                using var reader = command.ExecuteReader();
-                if (reader.Read())
+                var user = _dbContext.Users.Find(userId);
+                if (user == null)
                 {
-                    // Process user data here
+                    throw new Exception("Brugeren blev ikke fundet");
                 }
+                return user;
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException dbEx)
             {
-                throw new Exception("A database error occurred while retrieving the user.", sqlEx);
+                throw new Exception("Der opstod en databasefejl under hentning af brugeren.", dbEx);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
+                throw new Exception("Der opstod en fejl under hentning af brugeren.", ex);
             }
         }
+
         public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
         {
             try
