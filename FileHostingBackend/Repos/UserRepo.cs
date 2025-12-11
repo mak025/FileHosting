@@ -10,13 +10,13 @@ using Microsoft.EntityFrameworkCore;
 namespace FileHostingBackend.Repos
 {
     public class UserRepo : IUserRepo
-    {     
+    {
+        private readonly string _connectionString;
+        private readonly FileHostDBContext _dbContext = new FileHostDBContext();
 
-        private readonly FileHostDBContext _dbContext;
-
-        public UserRepo(FileHostDBContext dbContext)
+        public UserRepo(string connectionString)
         {
-            _dbContext = dbContext;
+            _connectionString = connectionString;
         }
 
         public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
@@ -46,85 +46,109 @@ namespace FileHostingBackend.Repos
 
                 }
 
+                User.UserType typeEnums;
+                if (Enum.IsDefined(typeof(User.UserType), userType))
+                {
+                    typeEnums = (User.UserType)userType;
+                }
+                else
+                {
+                    typeEnums = User.UserType.Member;
+                }
+                var user = new User
+                {
+                    Name = name,
+                    Email = email,
+                    Address = address,
+                    PhoneNumber = phoneNumber,
+                    UnionId = unionId,
+                    Type = typeEnums
+                };
+
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Der opstod en fejl i databasen ved oprettelse af bruger.", ex);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("Der opstod en vejl ved oprettelse af bruger.", ex);
+            }
+        }
 
         public void GetUserById(int userId)
         {
-            using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("SELECT * FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                using var reader = command.ExecuteReader();
-                if (reader.Read())
+                var user = _dbContext.Users.Find(userId);
+                if (user == null)
                 {
-                    // Process user data here
+                    throw new Exception("Brugeren blev ikke fundet");
                 }
+                return user;
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException dbEx)
             {
-                throw new Exception("A database error occurred while retrieving the user.", sqlEx);
+                throw new Exception("Der opstod en databasefejl under hentning af brugeren.", dbEx);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while retrieving the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
+                throw new Exception("Der opstod en fejl under hentning af brugeren.", ex);
             }
         }
-        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
+
+        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, int userType)
         {
-            using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("UPDATE Users SET Name = @Name, Email = @Email, Address = @Address, PhoneNumber = @PhoneNumber, Type = @Type WHERE ID = @UserId;", connection);
-
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@Email", email);
-                command.Parameters.AddWithValue("@Address", address);
-                command.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-                command.Parameters.AddWithValue("@Type", userType);
-                connection.Open();
-                command.ExecuteNonQuery();
+                var user = _dbContext.Users.Find(userId);
+                if (user == null)
+                {
+                    throw new Exception("Brugeren blev ikke fundet");
+                }
+                user.Name = name;
+                user.Email = email;
+                user.Address = address;
+                user.PhoneNumber = phoneNumber;
+                user.UserType = userType;
+                _dbContext.SaveChanges();
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException dbEx)
             {
-                throw new Exception("A database error occurred while updating the user.", sqlEx);
+                throw new Exception("Der opstod en databasefejl under opdatering af brugeren.", dbEx);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while updating the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
+                throw new Exception("Der opstod en fejl under opdatering af brugeren.", ex);
             }
         }
 
         public void DeleteUser(int userId)
         {
-            using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("DELETE FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                command.ExecuteNonQuery();
+                var user = _dbContext.users.Find(userId);
+                if (user != null)
+                {
+                    _dbContext.users.Remove(user);
+                    _dbContext.SaveChanges();
+                }
+
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException dbEx)
             {
-                throw new Exception("A database error occurred while deleting the user.", sqlEx);
+                throw new Exception("Der opstod en databasefejl under sletning af brugeren.", dbEx);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
-            }
+                throw new Exception("Der opstod en fejl under sletning af brugeren.", ex);
 
+            }
         }
     }
+}
