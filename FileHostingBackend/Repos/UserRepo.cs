@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FileHostingBackend.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Repos
 {
@@ -157,27 +158,25 @@ namespace FileHostingBackend.Repos
 
         public void DeleteUser(int userId)
         {
-            using var connection = new SqlConnection(_connectionString);
             try
             {
-                using var command = new SqlCommand("DELETE FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                command.ExecuteNonQuery();
+                var user = _dbContext.users.Find(userId);
+                if (user != null)
+                {
+                    _dbContext.users.Remove(user);
+                    _dbContext.SaveChanges();
+                }
+
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException dbEx)
             {
-                throw new Exception("A database error occurred while deleting the user.", sqlEx);
+                throw new Exception("Der opstod en databasefejl under sletning af brugeren.", dbEx);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
-            }
+                throw new Exception("Der opstod en fejl under sletning af brugeren.", ex);
 
+            }
         }
     }
 }

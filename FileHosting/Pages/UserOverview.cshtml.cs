@@ -43,7 +43,7 @@ namespace FileHosting.Pages
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)
                 return NotFound();
-
+        
             _dbContext.Users.Remove(user);
             await _dbContext.SaveChangesAsync();
 
