@@ -1,13 +1,7 @@
 ﻿@page
 @model FileHosting.Pages.UserOverviewModel
-@using Microsoft.AspNetCore.Authorization
-
-@inject IAuthorizationService AuthorizationService
-
 @{
     ViewData["Title"] = "Brugere";
-    // Evaluate the AdminOnly policy for the current user (async allowed in Razor)
-    var isAdmin = (await AuthorizationService.AuthorizeAsync(User, "AdminOnly")).Succeeded;
 }
 
 <h1>Brugere</h1>
@@ -31,17 +25,14 @@
                 <td>@user.Name</td>
                 <td>@user.Email</td>
                 <td>@user.PhoneNumber</td>
-                <td>@user.Type</td>
+                <td>@user.Type</td>   
                 <td>@user.Union?.UnionName</td>
                 <td>
-                    @if (isAdmin)
-                    {
-                        <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');">
-                            <input type="hidden" name="userId" value="@user.ID" />
-                            <button type="submit" class="btn btn-sm btn-danger">Slet</button>
-                            @Html.AntiForgeryToken()
-                        </form>
-                    }
+                    <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');">
+                        <input type="hidden" name="userId" value="@user.ID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Slet</button>
+                        @Html.AntiForgeryToken()
+                    </form>
                 </td>
             </tr>
         }
