@@ -160,5 +160,28 @@ namespace FileHostingBackend.Repos
 
             }
         }
+        public async Task UpdateFilePermissionsAsync(int userId, List<StoredFileInfo> files)
+        {
+            try
+            {
+                var user = await _dbContext.Users
+                    .Include(u => u.FilePermissions)
+                    .FirstOrDefaultAsync(u => u.ID == userId);
+                if (user == null)
+                {
+                    throw new Exception("Brugeren blev ikke fundet");
+                }
+                user.FilePermissions = files;
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                throw new Exception("Der opstod en databasefejl under opdatering af brugerens filrettigheder.", dbEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Der opstod en fejl under opdatering af brugerens filrettigheder.", ex);
+            }
+        }
     }
 }

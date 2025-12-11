@@ -14,10 +14,8 @@ namespace FileHostingBackend.Repos
 
         // Required members for wastebasket/restore
         Task<List<StoredFileInfo>> GetDeletedFilesAsync();
-        Task RestoreAsync(string fileName);
-        //Task PermanentlyDeleteAsync(string fileName);
-
-
+        Task RestoreAsync(string fileName); //Task PermanentlyDeleteAsync(string fileName);
+        Task UpdateUserPermissionsAsync(int fileId, List<User> user);
 
         #region Download Function
         // Prototype: get a presigned URL for direct download from storage
@@ -25,6 +23,7 @@ namespace FileHostingBackend.Repos
 
         // New: retrieve object as a stream plus content-type (for server-side streaming download)
         Task<(System.IO.Stream Stream, string ContentType)> GetObjectWithContentTypeAsync(string filePath);
+
         #endregion
     }
 }

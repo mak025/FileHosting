@@ -14,5 +14,6 @@ namespace FileHostingBackend.Repos
         Task<User?> GetUserByIdAsync(int userId);
         Task UpdateUserAsync(int userId, string name, string email, string address, string phoneNumber, int userType);
         Task DeleteUserAsync(int userId);
+        Task UpdateFilePermissionsAsync(int userId, List<StoredFileInfo> files);
     }
 }

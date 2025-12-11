@@ -38,5 +38,9 @@ namespace FileHostingBackend.Services
             _userRepo.DeleteUserAsync(userId);
         }
 
+        public async Task UpdateFilePermissionsAsync(int userId, List<StoredFileInfo> files)
+        { 
+            _userRepo.UpdateFilePermissionsAsync(userId, files);
+        }
     }
 }

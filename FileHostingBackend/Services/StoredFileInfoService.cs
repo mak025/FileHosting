@@ -48,10 +48,10 @@ namespace FileHostingBackend.Services
             await _storedFileInfoRepo.RestoreAsync(fileName);
         }
 
-        //public async Task PermanentlyDeleteAsync(string fileName)
-        //{
-        //    await _storedFileInfoRepo.PermanentlyDeleteAsync(fileName);
-        //}
+        public async Task UpdateUserPermissionsAsync(int fileId, List<User> users)
+        {             
+            await _storedFileInfoRepo.UpdateUserPermissionsAsync(fileId, users);
+        }
 
         #region Download Function
         // Prototype wrapper: get presigned download URL from the repo

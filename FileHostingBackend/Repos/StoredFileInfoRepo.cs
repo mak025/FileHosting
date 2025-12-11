@@ -154,6 +154,26 @@ namespace FileHostingBackend.Repos
                 await _dbContext.SaveChangesAsync();
             }
         }
+        public async Task UpdateUserPermissionsAsync(int fileId, List<User> users)
+        {             
+            var file = await _dbContext.StoredFiles
+                .Include(f => f.UsersWithPermission)
+                .FirstOrDefaultAsync(f => f.ID == fileId);
+            if (file == null)
+            {
+                throw new Exception("Filen kunne ikke findes.");
+            }
+                file.UsersWithPermission.Clear();
+            try
+            {
+                file.UsersWithPermission = users;
+                await _dbContext.SaveChangesAsync();
+            }            
+            catch (Exception ex)
+            {
+                throw new Exception("Der opstod en fejl under opdatering af filrettighederne.", ex);
+            }
+        }
 
         #region Download Function
         // Prototype: return a presigned URL that the client can use to download directly from Minio
