@@ -5,179 +5,82 @@ using System.Text;
 using System.Threading.Tasks;
 using FileHostingBackend.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Repos
 {
     public class UserRepo : IUserRepo
-    {
-        private readonly string _connectionString;
+    {     
 
-        public UserRepo(string connectionString)
+        private readonly FileHostDBContext _dbContext;
+
+        public UserRepo(FileHostDBContext dbContext)
         {
-            _connectionString = connectionString;
+            _dbContext = dbContext;
         }
 
-        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType) // rewrite using EFCore - dbcontext.beigntransaction
-        {
-            // Opens the connection to the SQL Server
-            using var connection = new SqlConnection(_connectionString);
-            connection.Open();
-
-            // Starts the sequence of checks and commands
-            using var transaction = connection.BeginTransaction();
+        public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
+        { 
+        
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
             try
             {
-                // Determine UnionId to - If none is defined in the invite - uses the first in the table
                 int unionId;
-                if (union is int providedUnionId && providedUnionId > 0)
+                if (unionIdFromInvite.HasValue && unionIdFromInvite.Value > 0)
                 {
-                    unionId = providedUnionId;
+                    bool exists = await _dbContext.Union
+                        .AnyAsync(u => u.UnionId == unionIdFromInvite.Value);
+                    if (exists)
+                    {
+                        unionId = unionIdFromInvite.Value;
+                    }
+                    else
+                    {
+                        unionId = await GetorCreateDefaultUnionAsync();
+                    }
                 }
                 else
                 {
-                    // try get first existing union - if nonoe found, then creates a default
-                    using (var cmdGet = new SqlCommand("SELECT TOP(1) UnionId FROM [Union] ORDER BY UnionId;", connection, transaction))
-                    {
-                        var obj = cmdGet.ExecuteScalar();
-                        if (obj != null && obj != DBNull.Value)
-                        {
-                            unionId = Convert.ToInt32(obj);
-                        }
-                        else
-                        {
-                            // create a default union and return its id | Use EFCore for creating new admin if none exists.
-                            using var cmdInsertUnion = new SqlCommand("INSERT INTO [Union] (UnionName) VALUES (@Name); SELECT SCOPE_IDENTITY();", connection, transaction);
-                            cmdInsertUnion.Parameters.AddWithValue("@Name", "DefaultUnion");
-                            var inserted = cmdInsertUnion.ExecuteScalar();
-                            unionId = Convert.ToInt32(inserted);
-                        }
-                    }
+
+                    unionId = await GetorCreateDefaultUnionAsync();
+
                 }
 
-                // Derive Discriminator from enum value to match EF's TPH values (class names)
-                string discriminator;
-                try
+                User.UserType typeEnums;
+                if (Enum.IsDefined(typeof(User.UserType), userType))
                 {
-                    discriminator = ((User.UserType)userType).ToString();
+                    typeEnums = (User.UserType)userType;
                 }
-                catch
+                else
                 {
-                    discriminator = "User";
+                    typeEnums = User.UserType.Member;
                 }
+                var user = new User
+                {
+                    Name = name,
+                    Email = email,
+                    Address = address,
+                    PhoneNumber = phoneNumber,
+                    UnionId = unionId,
+                    Type = typeEnums
+                };
 
-                // Insert new user with UnionId and Discriminator
-                using var cmdUser = new SqlCommand(
-                    "INSERT INTO Users (Name, Email, Address, PhoneNumber, UnionId, Type, Discriminator) " +
-                    "VALUES (@Name, @Email, @Address, @PhoneNumber, @UnionId, @Type, @Discriminator);", connection, transaction);
-
-                cmdUser.Parameters.AddWithValue("@Name", name);
-                cmdUser.Parameters.AddWithValue("@Email", email);
-                cmdUser.Parameters.AddWithValue("@Address", address ?? string.Empty);
-                cmdUser.Parameters.AddWithValue("@PhoneNumber", phoneNumber ?? string.Empty);
-                cmdUser.Parameters.AddWithValue("@UnionId", unionId);
-                cmdUser.Parameters.AddWithValue("@Type", userType);
-                cmdUser.Parameters.AddWithValue("@Discriminator", discriminator);
-
-                cmdUser.ExecuteNonQuery();
-
-                transaction.Commit();
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-            catch (SqlException sqlEx)
+            catch (DbUpdateException ex)
             {
-                try { transaction.Rollback(); } catch { }
-                throw new Exception("A database error occurred while creating the user.", sqlEx);
+                await transaction.RollbackAsync();
+                throw new Exception("Der opstod en fejl i databasen ved oprettelse af bruger.", ex);
             }
             catch (Exception ex)
             {
-                try { transaction.Rollback(); } catch { }
-                throw new Exception("An error occurred while creating the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
+                await transaction.RollbackAsync();
+                throw new Exception("Der opstod en vejl ved oprettelse af bruger.", ex);
             }
         }
 
-
-        public void GetUserById(int userId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            try
-            {
-                using var command = new SqlCommand("SELECT * FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                using var reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    // Process user data here
-                }
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new Exception("A database error occurred while retrieving the user.", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            try
-            {
-                using var command = new SqlCommand("UPDATE Users SET Name = @Name, Email = @Email, Address = @Address, PhoneNumber = @PhoneNumber, Type = @Type WHERE ID = @UserId;", connection);
-
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@Email", email);
-                command.Parameters.AddWithValue("@Address", address);
-                command.Parameters.AddWithValue("@PhoneNumber", phoneNumber);
-                command.Parameters.AddWithValue("@Type", userType);
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new Exception("A database error occurred while updating the user.", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while updating the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        public void DeleteUser(int userId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            try
-            {
-                using var command = new SqlCommand("DELETE FROM Users WHERE ID = @UserId;", connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new Exception("A database error occurred while deleting the user.", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while deleting the user.", ex);
-            }
-            finally
-            {
-                connection.Close();
-            }
 
         }
     }
-}

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using FileHostingBackend.Models;
+using FileHostingBackend.Repos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FileHostingBackend.Repos;
 
 namespace FileHostingBackend.Services
 {
@@ -16,24 +17,25 @@ namespace FileHostingBackend.Services
         {
             _userRepo = userRepo;
         }
-        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType)
+
+        public Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionId, int userType)
         {
-            _userRepo.CreateUser(name, email, address, phoneNumber, union, userType);
+            return _userRepo.CreateUserAsync(name, email, address, phoneNumber, unionId, userType);
         }
 
-        public void GetUserById(int userId)
+        public Task<User?> GetUserByIdAsync(int userId)
         {
-            _userRepo.GetUserById(userId);
+            return _userRepo.GetUserByIdAsync(userId);
         }
 
-        public void UpdateUser(string name, string email, string address, string phoneNumber, int userType)
+        public Task UpdateUserAsync(int userId,string name,string email, string address,string phoneNumber, int userType)
         {
-            _userRepo.UpdateUser(name, email, address, phoneNumber,userType);
+            return _userRepo.UpdateUserAsync(userId, name, email, address, phoneNumber, userType);
         }
 
-        public void DeleteUser(int userId)
+        public Task DeleteUserAsync(int userId)
         {
-            _userRepo.DeleteUser(userId);
+            return _userRepo.DeleteUserAsync(userId);
         }
 
     }

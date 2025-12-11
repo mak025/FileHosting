@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileHostingBackend.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace FileHostingBackend.Repos
 {
     public interface IUserRepo
     {
-        public void CreateUser(string name, string email, string address, string phoneNumber, object? union, int userType); 
-        public void GetUserById(int userId);
-        public void UpdateUser(string name, string email, string address, string phoneNumber,int userType);
-        public void DeleteUser(int userId);
+        Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionId, int userType);
+        Task<User?> GetUserByIdAsync(int userId);
+        Task UpdateUserAsync(int userId, string name, string email, string address, string phoneNumber, int userType);
+        Task DeleteUserAsync(int userId);
     }
 }
