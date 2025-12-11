@@ -17,9 +17,9 @@ namespace FileHostingBackend.Services
         {
             _userRepo = userRepo;
         }
-        public void CreateUserAsync(string name, string email, string address, string phoneNumber, int? union, int userType)
+        public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? union, int userType)
         {
-            _userRepo.CreateUserAsync(name, email, address, phoneNumber, union, userType);
+            await _userRepo.CreateUserAsync(name, email, address, phoneNumber, union, userType);
         }
 
         public Task<User?> GetUserByIdAsync(int userId)

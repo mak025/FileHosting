@@ -25,29 +25,24 @@ namespace FileHostingBackend.Repos
 
         public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
         { 
-        
-            await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            await _dbContext.Database.BeginTransactionAsync();
+            
             try
             {
-                int unionId;
+                Union union;
+                
                 if (unionIdFromInvite.HasValue && unionIdFromInvite.Value > 0)
                 {
-                    bool exists = await _dbContext.Union
-                        .AnyAsync(u => u.UnionId == unionIdFromInvite.Value);
-                    if (exists)
+                    union = await _dbContext.Union.FirstOrDefaultAsync(u => u.UnionId == unionIdFromInvite.Value);
+                    
+                    if (union == null)
                     {
-                        unionId = unionIdFromInvite.Value;
-                    }
-                    else
-                    {
-                        unionId = await _unionRepo.GetOrCreateDefaultUnionAsync();
+                        union = await _unionRepo.GetOrCreateDefaultUnionAsync();
                     }
                 }
                 else
                 {
-
-                    unionId = await _unionRepo.GetOrCreateDefaultUnionAsync();
-
+                    union = await _unionRepo.GetOrCreateDefaultUnionAsync();
                 }
 
                 User.UserType typeEnums;
@@ -59,28 +54,27 @@ namespace FileHostingBackend.Repos
                 {
                     typeEnums = User.UserType.Member;
                 }
+                
                 var user = new User
                 {
                     Name = name,
                     Email = email,
                     Address = address,
                     PhoneNumber = phoneNumber,
-                    UnionId = unionId,
+                    Union = union,
                     Type = typeEnums
                 };
 
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await _dbContext.Database.CommitTransactionAsync();
             }
             catch (DbUpdateException ex)
             {
-                await transaction.RollbackAsync();
                 throw new Exception("Der opstod en fejl i databasen ved oprettelse af bruger.", ex);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 throw new Exception("Der opstod en vejl ved oprettelse af bruger.", ex);
             }
         }
@@ -126,7 +120,7 @@ namespace FileHostingBackend.Repos
                 user.PhoneNumber = phoneNumber;
                 user.Type = (User.UserType)userType;
 
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateException dbEx)
             {
@@ -146,7 +140,7 @@ namespace FileHostingBackend.Repos
                 if (user != null)
                 {
                     _dbContext.Users.Remove(user);
-                    _dbContext.SaveChanges();
+                    await _dbContext.SaveChangesAsync();
                 }
 
             }
