@@ -19,7 +19,13 @@ namespace FileHostingBackend.Models
         public string? ShareLink { get; set; } = String.Empty; // Public shareable link. String.Empty default value
         public string BucketName { get; set; } // Storage bucket name
         public bool IsSoftDeleted { get; set; } = false; // Soft delete flag
-        public List<User> UsersWithPermission { get; set; } // Users with access to the file
-        public StoredFileInfo() { }
+
+        // initialize collection navigation to avoid EF confusion / null refs
+        public List<User> UsersWithPermission { get; set; } = new List<User>(); // Users with access to the file
+
+        public StoredFileInfo()
+        {
+            UsersWithPermission = new List<User>();
+        }
     }
 }

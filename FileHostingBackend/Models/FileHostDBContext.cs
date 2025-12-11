@@ -22,6 +22,32 @@ namespace FileHostingBackend.Models
         }
         public DbSet<Invite> Invites { get; set; }
         public DbSet<Union> Union { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Explicit many-to-many relationship between StoredFileInfo and User for file permissions
+            modelBuilder.Entity<StoredFileInfo>()
+                .HasMany(s => s.UsersWithPermission)
+                .WithMany(u => u.FilePermissions)
+                .UsingEntity<Dictionary<string, object>>(
+                    "StoredFileUserPermission",
+                    right => right
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    left => left
+                        .HasOne<StoredFileInfo>()
+                        .WithMany()
+                        .HasForeignKey("StoredFileInfoID")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    join =>
+                    {
+                        join.HasKey("StoredFileInfoID", "UserId");
+                        join.ToTable("StoredFileUserPermissions");
+                    });
+        }
     }
 
     // Do not delete below class - used for migrating to database 
