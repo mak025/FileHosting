@@ -4,20 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileHostingBackend.Models;
+using FileHostingBackend.Repos;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Repos
 {
-    public class UserRepo : IUserRepo
+    public class UserRepo : IUserRepo 
     {
-        private readonly string _connectionString;
-        private readonly FileHostDBContext _dbContext = new FileHostDBContext();
+        private readonly FileHostDBContext _dbContext;
+        private readonly IUnionRepo _unionRepo;
 
-        public UserRepo(string connectionString)
+        public UserRepo(FileHostDBContext dbContext, IUnionRepo unionrepo)
         {
-            _connectionString = connectionString;
+            _dbContext = dbContext;
+            _unionRepo = unionrepo;
+            
         }
+
 
         public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
         { 
@@ -36,13 +40,13 @@ namespace FileHostingBackend.Repos
                     }
                     else
                     {
-                        unionId = await GetorCreateDefaultUnionAsync();
+                        unionId = await _unionRepo.GetOrCreateDefaultUnionAsync();
                     }
                 }
                 else
                 {
 
-                    unionId = await GetorCreateDefaultUnionAsync();
+                    unionId = await _unionRepo.GetOrCreateDefaultUnionAsync();
 
                 }
 
@@ -81,16 +85,13 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public void GetUserById(int userId)
+        public async Task<User?> GetUserByIdAsync(int userId)
         {
             try
             {
-                var user = _dbContext.Users.Find(userId);
-                if (user == null)
-                {
-                    throw new Exception("Brugeren blev ikke fundet");
-                }
-                return user;
+                return await _dbContext.Users
+                    .Include(u => u.Union)
+                    .FirstOrDefaultAsync(u => u.ID == userId);
             }
             catch (DbUpdateException dbEx)
             {
@@ -102,7 +103,7 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public void UpdateUser(int userId, string name, string email, string address, string phoneNumber, int userType)
+        public async Task UpdateUserAsync(int userId, string name, string email, string address, string phoneNumber, int userType)
         {
             try
             {
@@ -111,11 +112,20 @@ namespace FileHostingBackend.Repos
                 {
                     throw new Exception("Brugeren blev ikke fundet");
                 }
+                if (Enum.IsDefined(typeof(User.UserType), userType))
+                {
+                    user.Type = (User.UserType)userType;
+                }
+                else
+                {
+                    user.Type = User.UserType.Member;
+                }
                 user.Name = name;
                 user.Email = email;
                 user.Address = address;
                 user.PhoneNumber = phoneNumber;
-                user.UserType = userType;
+                user.Type = (User.UserType)userType;
+
                 _dbContext.SaveChanges();
             }
             catch (DbUpdateException dbEx)
@@ -128,14 +138,14 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public void DeleteUser(int userId)
+        public async Task DeleteUserAsync(int userId)
         {
             try
             {
-                var user = _dbContext.users.Find(userId);
+                var user = _dbContext.Users.Find(userId);
                 if (user != null)
                 {
-                    _dbContext.users.Remove(user);
+                    _dbContext.Users.Remove(user);
                     _dbContext.SaveChanges();
                 }
 
