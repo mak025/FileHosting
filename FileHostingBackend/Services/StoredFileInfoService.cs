@@ -52,6 +52,10 @@ namespace FileHostingBackend.Services
         {             
             await _storedFileInfoRepo.UpdateUserPermissionsAsync(fileId, users);
         }
+        public async Task<List<StoredFileInfo>> GetFilesWithPermissionAsync(int userId)
+        {             
+            return await _storedFileInfoRepo.GetFilesWithPermissionAsync(userId);
+        }
 
         #region Download Function
         // Prototype wrapper: get presigned download URL from the repo

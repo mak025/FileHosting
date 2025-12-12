@@ -234,6 +234,13 @@ namespace FileHostingBackend.Repos
             }
         }
         #endregion
+        public async Task<List<StoredFileInfo>> GetFilesWithPermissionAsync(int userId)
+        {
+            return await _dbContext.StoredFiles
+                .Where(f => f.UsersWithPermission.Any(u => u.ID == userId) && !f.IsSoftDeleted)
+                .OrderByDescending(f => f.UploadedAt)
+                .ToListAsync();
+        }
     }
 }
 

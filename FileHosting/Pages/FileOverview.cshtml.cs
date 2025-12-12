@@ -29,7 +29,25 @@ namespace FileHosting.Pages
 
         public async Task OnGetAsync()
         {
-            Files = await _storedFileInfoService.GetAllFilesAsync();
+            // Get the user ID from claims
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            {
+                // Optionally: handle unauthenticated or invalid user
+                Files = new List<StoredFileInfo>();
+                return;
+            }
+
+            // Find the user in the database
+            var user = await _dbContext.Users.FindAsync(userId);
+            if (user == null)
+            {
+                // Optionally: handle user not found
+                Files = new List<StoredFileInfo>();
+                return;
+            }
+
+            Files = await _storedFileInfoService.GetFilesWithPermissionAsync(userId);
 
             var searchQuery = Request.Query["search"].ToString();
             if (!string.IsNullOrEmpty(searchQuery))
