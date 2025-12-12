@@ -28,7 +28,6 @@
 }
 
 <section class="file-overview">
-
     <!-- Header -->
     <header class="content-header">
         <div class="content-header-left">
@@ -45,9 +44,9 @@
                        class="search-input" />
                 <button type="submit" class="btn btn-outline">Søg</button>
             </form>
-
         </div>
     </header>
+
     <!-- UPLOAD SECTION -->
     <section class="upload-section">
         <h2>Upload filer</h2>
@@ -70,6 +69,7 @@
             </div>
         }
     </section>
+
     <!-- FILE GRID -->
     <section class="file-grid">
         @if (Model.Files != null && Model.Files.Any())
@@ -77,54 +77,21 @@
             @foreach (var file in Model.Files)
             {
                 <article class="file-card">
-                    <div class="file-card-link">
-                        <!-- Thumbnail -->
-                        <div class="@GetFileTypeClass(file.Name)">
-                            <span class="file-icon-label">
-                                @System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()
-                            </span>
-                        </div>
-
-                        <!-- FileName -->
-                        <div class="file-title" title="@file.Name">
-                            @file.Name
+                    <!-- Top section: filetype colored header with large icon/label + filename -->
+                    <div class="file-card-top @GetFileTypeClass(file.Name)">
+                        <div class="file-card-top-inner">
+                            <div class="file-thumb-large" aria-hidden="true">
+                                <span class="file-icon-label">@System.IO.Path.GetExtension(file.Name).Replace(".", "").ToUpper()</span>
+                            </div>
+                            <div class="file-title" title="@file.Name">@file.Name</div>
                         </div>
                     </div>
-                    @if (Model.IsAdmin)
-                    {
-                        <form method="post" asp-page-handler="Permissions" class="permissions-form">
-                            @Html.AntiForgeryToken()
 
-                            <input type="hidden" name="fileId" value="@file.ID" />
-
-                            <details>
-                                <summary class="btn btn-outline">Permissions</summary>
-
-                                <div class="permissions-dropdown">
-                                    @foreach (var user in Model.AllUsers)
-                                    {
-                                        var isChecked = file.UsersWithPermission.Any(u => u.ID == user.ID);
-
-                                        <label class="permission-item">
-                                            <input type="checkbox"
-                                                   name="userIds"
-                                                   value="@user.ID"
-                                                   @(isChecked ? "checked" : "") />
-                                            @user.Name
-                                        </label>
-                                    }
-
-                                    <button type="submit" class="btn btn-primary">Gem</button>
-                                </div>
-                            </details>
-                        </form>
-                    }
-
-                    <div class="file-meta">
+                    <!-- Bottom section: meta + actions -->
+                    <div class="file-card-bottom">
                         <div class="file-meta-left">
-                            <div class="file-avatar"></div>
                             <div class="file-meta-text">
-                                <div class="file-meta-owner">Uploaded by UserID: @file.UploadedByID</div>
+                                <div class="file-meta-owner">Uploaded by @file.UploadedByID</div>
                                 <div class="file-meta-date">@file.UploadedAt.ToString("d. MMM yyyy")</div>
                             </div>
                         </div>
@@ -144,6 +111,35 @@
                                 <input type="hidden" name="filePath" value="@file.FilePath" />
                                 <button type="submit" class="btn-link" title="Slet (flyt til papirkurv)">Slet</button>
                             </form>
+
+                            @if (Model.IsAdmin)
+                            {
+                                <form method="post" asp-page-handler="Permissions" class="permissions-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="fileId" value="@file.ID" />
+
+                                    <details>
+                                        <summary class="btn btn-outline">Permissions</summary>
+
+                                        <div class="permissions-dropdown">
+                                            @foreach (var user in Model.AllUsers)
+                                            {
+                                                var isChecked = file.UsersWithPermission.Any(u => u.ID == user.ID);
+
+                                                <label class="permission-item">
+                                                    <input type="checkbox"
+                                                           name="userIds"
+                                                           value="@user.ID"
+                                                           @(isChecked ? "checked" : "") />
+                                                    @user.Name
+                                                </label>
+                                            }
+
+                                            <button type="submit" class="btn btn-primary">Gem</button>
+                                        </div>
+                                    </details>
+                                </form>
+                            }
                         </div>
                     </div>
                 </article>

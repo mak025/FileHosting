@@ -7,37 +7,36 @@
 <h1>Brugere</h1>
 <p>Liste over alle brugere i systemet.</p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Navn</th>
-            <th>Email</th>
-            <th>Telefon</th>
-            <th>Type</th>
-            <th>Fagforening</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model.Users)
-        {
-            <tr>
-                <td>@user.Name</td>
-                <td>@user.Email</td>
-                <td>@user.PhoneNumber</td>
-                <td>@user.Type</td>   
-                <td>@user.Union?.UnionName</td>
-                <td>
-                @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
-                {
-                    <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');">
-                        <input type="hidden" name="userId" value="@user.ID"/>
-                        <button type="submit" class="btn btn-sm btn-danger">Slet</button>
-                        @Html.AntiForgeryToken()
-                    </form>
-                }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<section class="user-grid">
+    @foreach (var user in Model.Users)
+    {
+        <article class="user-card card">
+            <div class="user-card-top">
+                <div class="user-avatar">@(!string.IsNullOrEmpty(user.Name) ? user.Name.Substring(0,1).ToUpper() : "?")</div>
+                <div class="user-info">
+                    <div class="user-name">@user.Name</div>
+                    <div class="user-email">@user.Email</div>
+                </div>
+            </div>
+
+            <div class="user-card-bottom">
+                <div class="user-meta">
+                    <div class="meta-item">@user.PhoneNumber</div>
+                    <div class="meta-item">@user.Type</div>
+                    <div class="meta-item">@user.Union?.UnionName</div>
+                </div>
+
+                <div class="user-actions">
+                    @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
+                    {
+                        <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');" class="inline-form">
+                            <input type="hidden" name="userId" value="@user.ID"/>
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Slet</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </article>
+    }
+</section>

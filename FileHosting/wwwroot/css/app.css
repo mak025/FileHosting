@@ -152,55 +152,134 @@ label, .form-label { font-size:0.9rem; color:#334155; }
   margin-top:16px;
 }
 .file-card {
-  background:var(--card);
-  border-radius:10px;
-  padding:12px;
-  box-shadow: 0 6px 18px rgba(15,23,42,0.04);
   display:flex;
   flex-direction:column;
-  gap:10px;
+  border-radius:10px;
+  overflow:hidden; /* ensure top's background spans full width */
+  background:var(--surface);
+  box-shadow:0 6px 18px rgba(15,23,42,0.04);
   border:1px solid rgba(15,23,42,0.03);
 }
-.file-card-link { display:flex; gap:12px; align-items:center; }
-.file-title { font-weight:600; font-size:0.95rem; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-/* File meta area */
-.file-meta { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:auto; }
-.file-meta-left { display:flex; align-items:center; gap:10px; }
-.file-avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#eef2ff,#e6f0ff); flex:0 0 34px; }
+/* Top area uses the same filetype classes for background */
+.file-card-top {
+  padding:14px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+}
+.file-card-top .file-card-top-inner {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:100%;
+}
+.file-thumb-large {
+  width:56px;
+  height:56px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:0.9rem;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.08);
+  flex:0 0 56px;
+  background: rgba(255,255,255,0.12);
+}
+.file-card-top .file-title {
+  font-size:1rem;
+  font-weight:600;
+  color:inherit;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Bottom area: neutral surface with actions */
+.file-card-bottom {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px;
+  background:var(--surface);
+  color:var(--text);
+}
+.file-meta-left { display:flex; gap:10px; align-items:center; }
 .file-meta-text { display:flex; flex-direction:column; }
-.file-meta-owner { font-size:0.9rem; color:#0b1220; }
+.file-meta-owner { font-size:0.95rem; color:var(--text); }
 .file-meta-date { font-size:0.85rem; color:var(--muted); }
 
-/* Inline forms */
-.inline-form { display:inline-block; }
+/* Filetype specific backgrounds for the top area */
+.file-card-top.file-thumb.pdf { background: linear-gradient(180deg,#e63946,#d62828); }
+.file-card-top.file-thumb.doc { background: linear-gradient(180deg,#2b6ef9,#1e57d0); }
+.file-card-top.file-thumb.xls { background: linear-gradient(180deg,#1aa053,#128c45); }
+.file-card-top.file-thumb.ppt { background: linear-gradient(180deg,#ff7b2d,#ff5a1f); }
+.file-card-top.file-thumb.image { background: linear-gradient(135deg,#6ee7b7,#60a5fa); color:#083344; }
+.file-card-top.file-thumb.txt { background: linear-gradient(180deg,#94a3b8,#64748b); }
+.file-card-top.file-thumb.url { background: linear-gradient(180deg,#f59e0b,#d97706); }
+.file-card-top.file-thumb.zip { background: linear-gradient(180deg,#9ca3ff,#6366f1); }
+.file-card-top.file-thumb.generic { background: linear-gradient(180deg,#cbd5e1,#94a3b8); color:#04263a; }
 
-/* Permissions dropdown */
-.permissions-form details { margin-top:8px; }
-.permissions-dropdown { margin-top:8px; display:flex; flex-direction:column; gap:8px; padding-top:8px; }
-.permission-item { display:flex; gap:8px; align-items:center; }
+/* Ensure large icon text color adapts when top area has different color scheme */
+.file-card-top.file-thumb.image .file-thumb-large,
+.file-card-top.file-thumb.generic .file-thumb-large { color: inherit; }
+.file-card-top .file-thumb-large { color:#fff; background: rgba(255,255,255,0.12); }
 
-/* Auth layout */
-.auth-center { display:flex; align-items:center; justify-content:center; padding:24px; }
-.auth-card { width:100%; max-width:420px; }
-.card-title { margin:0 0 8px; font-weight:600; font-size:1.1rem; }
-.card-sub { margin:0 0 18px; color:var(--muted); font-size:0.95rem; }
-.auth-form .validation-summary { margin-bottom:12px; }
+/* User grid / user card */
+.user-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap:16px;
+  margin-top:12px;
+}
+.user-card {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:0; /* top/bottom sections manage their padding */
+  overflow:hidden;
+}
+.user-card-top {
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  background: linear-gradient(180deg, rgba(15,23,42,0.02), rgba(255,255,255,0.06));
+}
+.user-avatar {
+  width:48px;
+  height:48px;
+  border-radius:10px;
+  background: linear-gradient(135deg,#eef2ff,#e6f0ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  color: #0b1220;
+  font-size:1.05rem;
+  flex:0 0 48px;
+}
+.user-info { display:flex; flex-direction:column; }
+.user-name { font-weight:600; }
+.user-email { color:var(--muted); font-size:0.95rem; }
 
-/* Home hero and pricing */
-.home-hero { text-align:center; padding:2rem; color:var(--text); }
-.hero-title { font-size:2rem; margin-bottom:6px; }
-.hero-sub { color:#555; margin-top:0; }
-.pricing-grid { display:flex; gap:16px; justify-content:center; margin-top:2rem; flex-wrap:wrap; }
-.pricing-card { background:var(--card); border:1px solid rgba(15,23,42,0.04); border-radius:10px; width:260px; padding:1.25rem; box-shadow:0 6px 18px rgba(15,15,15,0.04); }
-.pricing-card.highlight { box-shadow:0 8px 22px rgba(43,140,255,0.06); border-color:rgba(13,77,235,0.08); }
-.pricing-card.pro { transform:translateY(-6px); box-shadow:0 12px 30px rgba(11,102,255,0.08); border:2px solid rgba(11,102,255,0.06); }
-.pricing-card h3 { margin:0 0 .4rem 0; }
-.price { font-size:1.35rem; margin:0 0 .75rem 0; color:#0b66ff; }
+/* user card bottom */
+.user-card-bottom {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  background:var(--surface);
+}
 
-/* Empty state */
-.empty-state { text-align:center; padding:28px; border-radius:12px; background:linear-gradient(180deg, rgba(15,23,42,0.02), rgba(255,255,255,0.4)); color:var(--muted); }
+/* small meta and actions */
+.user-meta { display:flex; gap:10px; align-items:center; color:var(--muted); font-size:0.9rem; }
+.user-actions { display:flex; gap:8px; align-items:center; }
 
-/* Table adjustments (UserOverview) */
-.table { width:100%; border-collapse:collapse; }
-.table th, .table td { padding:10px 8px; border-bottom:1px solid rgba(15,23,42,0.03); text-align:left; }
+/* small responsive tweaks */
+@media (max-width:520px){
+  .file-card { grid-column: span 1; }
+  .pricing-grid { flex-direction:column; }
+}
