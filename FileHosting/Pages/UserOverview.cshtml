@@ -28,11 +28,14 @@
                 <td>@user.Type</td>   
                 <td>@user.Union?.UnionName</td>
                 <td>
+                @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
+                {
                     <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Er du sikker på, at du vil slette denne bruger?');">
-                        <input type="hidden" name="userId" value="@user.ID" />
+                        <input type="hidden" name="userId" value="@user.ID"/>
                         <button type="submit" class="btn btn-sm btn-danger">Slet</button>
                         @Html.AntiForgeryToken()
                     </form>
+                }
                 </td>
             </tr>
         }
