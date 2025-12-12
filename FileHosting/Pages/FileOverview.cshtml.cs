@@ -47,7 +47,14 @@ namespace FileHosting.Pages
                 return;
             }
 
-            Files = await _storedFileInfoService.GetFilesWithPermissionAsync(userId);
+            if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
+            {
+                Files = await _storedFileInfoService.GetAllFilesAsync();
+            }
+            else
+            {
+                Files = await _storedFileInfoService.GetFilesWithPermissionAsync(userId);
+            }
 
             var searchQuery = Request.Query["search"].ToString();
             if (!string.IsNullOrEmpty(searchQuery))
