@@ -89,7 +89,7 @@ namespace FileHostingBackend.Repos
                 BucketName = _bucketName,
                 UploadedAt = DateTimeOffset.UtcNow,
                 IsSoftDeleted = false,
-                UploadedBy = user
+                UploadedByID = user.ID
             };
 
             _dbContext.StoredFiles.Add(metadata);
