@@ -157,16 +157,16 @@ namespace FileHostingBackend.Repos
         public async Task UpdateUserPermissionsAsync(int fileId, List<User> users)
         {             
             var file = await _dbContext.StoredFiles
-                .Include(f => f.UsersWithPermission)
+                .Include(f => f.Users)
                 .FirstOrDefaultAsync(f => f.ID == fileId);
             if (file == null)
             {
                 throw new Exception("Filen kunne ikke findes.");
             }
-                file.UsersWithPermission.Clear();
+                file.Users.Clear();
             try
             {
-                file.UsersWithPermission = users;
+                file.Users = users;
                 await _dbContext.SaveChangesAsync();
             }            
             catch (Exception ex)

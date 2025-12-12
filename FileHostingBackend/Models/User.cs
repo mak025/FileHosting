@@ -18,7 +18,7 @@ namespace FileHostingBackend.Models
             SysAdmin = 900
         }
 
-        public List<StoredFileInfo> FilePermissions { get; set; } 
+        public ICollection<StoredFileInfo> StoredFileInfos { get; set; } 
         public int ID { get; private set; }
         public string Name { get; set; }
         public string Email { get; set; }

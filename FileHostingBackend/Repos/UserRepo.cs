@@ -159,13 +159,13 @@ namespace FileHostingBackend.Repos
             try
             {
                 var user = await _dbContext.Users
-                    .Include(u => u.FilePermissions)
+                    .Include(u => u.StoredFileInfos)
                     .FirstOrDefaultAsync(u => u.ID == userId);
                 if (user == null)
                 {
                     throw new Exception("Brugeren blev ikke fundet");
                 }
-                user.FilePermissions = files;
+                user.StoredFileInfos = files;
                 await _dbContext.SaveChangesAsync();
             }
             catch (DbUpdateException dbEx)
