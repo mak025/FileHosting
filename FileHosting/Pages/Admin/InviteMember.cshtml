@@ -1,29 +1,36 @@
 ﻿@page
-@model FileHosting.Pages.Admin.InviteMemberModel
-@{
-    ViewData["Title"] = "Invite Member";
-}
-
-<section class="page-card">
-    <h1>Invite member</h1>
-
-    @if (!string.IsNullOrEmpty(Model.StatusMessage))
-    {
-        <div class="status success">@Model.StatusMessage</div>
-    }
-
-    <form method="post" class="form-compact">
-        <label asp-for="Input.Email">Email</label>
-        <input asp-for="Input.Email" class="form-control" />
-        <span asp-validation-for="Input.Email" class="validation-msg"></span>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Send invite</button>
-            <a class="btn btn-ghost" asp-page="/Index">Cancel</a>
-        </div>
-    </form>
-</section>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                    @model FileHosting.Pages.Admin.InviteMemberModel
+                    @{
+                        ViewData["Title"] = "Invite Member";
+                    }
+                    
+                    <div class="center">
+                        <section class="card" aria-labelledby="invite-heading">
+                            <h1 id="invite-heading">Invite member</h1>
+                            <p class="lead">Send an invitation link to a new member by entering their email address below.</p>
+                    
+                            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+                            {
+                                <div class="status" role="status">
+                                    @Model.StatusMessage
+                                </div>
+                            }
+                    
+                            <form method="post" novalidate>
+                                <div class="form-field">
+                                    <label asp-for="Input.Email">Email</label>
+                                    <input asp-for="Input.Email" type="email" autocomplete="email" />
+                                    <span asp-validation-for="Input.Email" class="validation"></span>
+                                </div>
+                    
+                                <div class="actions">
+                                    <a asp-page="/Index" class="btn btn-ghost" role="button">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Send invitation</button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+                    
+                    @section Scripts {
+                        <partial name="_ValidationScriptsPartial" />
+                    }

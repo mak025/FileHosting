@@ -1,36 +1,45 @@
 ﻿@page
-@model FileHosting.Pages.WastebasketModel
-@{
-    ViewData["Title"] = "Slettede filer";
-}
-
-<h1>Slettede filer</h1>
-
-@if (Model.DeletedFiles != null && Model.DeletedFiles.Any())
-{
-    <section class="file-grid">
-        @foreach (var file in Model.DeletedFiles)
-        {
-            <article class="file-card">
-                <div class="file-title">@file.Name</div>
-                <div class="file-meta-date">@file.UploadedAt.ToString("d. MMM yyyy")</div>
-
-                <div class="file-actions">
-                    <form method="post" asp-page-handler="Restore" style="display:inline">
-                        <input type="hidden" name="filePath" value="@file.FilePath" />
-                        <button type="submit" class="btn-link">Gendan</button>
-                    </form>
-
-                    <form method="post" asp-page-handler="Delete" style="display:inline" onsubmit="return confirm('Permanently delete this file?');">
-                        <input type="hidden" name="filePath" value="@file.FilePath" />
-                        <button type="submit" class="btn-link">Slet permanent</button>
-                    </form>
-                </div>
-            </article>
-        }
-    </section>
-}
-else
-{
-    <p>Ingen slettede filer.</p>
-}
+                    @model FileHosting.Pages.WastebasketModel
+                    @{
+                        ViewData["Title"] = "Slettede filer";
+                    }
+                    
+                    <!-- inline page styles removed — global styling is provided by /wwwroot/css/app.css -->
+                    <div class="waste-container">
+                        <h1>Slettede filer</h1>
+                        <div class="header-info">Her er filer som tidligere er slettet. Du kan gjenopprette eller slette permanent.</div>
+                    
+                        @if (Model.DeletedFiles != null && Model.DeletedFiles.Any())
+                        {
+                            <section class="file-grid" aria-label="Deleted files">
+                                @foreach (var file in Model.DeletedFiles)
+                                {
+                                    <article class="file-card" role="article">
+                                        <div class="file-title" title="@file.Name">@file.Name</div>
+                                        <div class="file-meta-date">Last modified: @file.UploadedAt.ToString("d. MMM yyyy")</div>
+                    
+                                        <div class="file-actions">
+                                            <form method="post" asp-page-handler="Restore" class="inline-form">
+                                                <input type="hidden" name="filePath" value="@file.FilePath" />
+                                                <button type="submit" class="btn btn-restore" aria-label="Restore @file.Name">Gendan</button>
+                                            </form>
+                    
+                                            @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
+                                            {
+                                                <form method="post" asp-page-handler="Delete" class="inline-form" onsubmit="return confirm('Permanently delete this file?');">
+                                                    <input type="hidden" name="filePath" value="@file.FilePath" />
+                                                    <button type="submit" class="btn btn-delete" aria-label="Delete @file.Name">Slet permanent</button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </article>
+                                }
+                            </section>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <p>Ingen slettede filer.</p>
+                            </div>
+                        }
+                    </div>

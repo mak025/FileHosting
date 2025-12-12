@@ -120,18 +120,16 @@
                         </form>
                     }
 
-                    <div class="file-meta" style="justify-content: space-between; width: 100%;">
-                        <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="file-meta">
+                        <div class="file-meta-left">
                             <div class="file-avatar"></div>
                             <div class="file-meta-text">
-                                <div class="file-meta-owner">Åbnet af dig</div>
-                                <div class="file-meta-date">
-                                    @file.UploadedAt.ToString("d. MMM yyyy")
-                                </div>
+                                <div class="file-meta-owner">Uploaded by UserID: @file.UploadedByID</div>
+                                <div class="file-meta-date">@file.UploadedAt.ToString("d. MMM yyyy")</div>
                             </div>
                         </div>
 
-                        <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="file-meta-right">
                             <a asp-page-handler="Download"
                                asp-route-filePath="@file.FilePath"
                                class="btn btn-outline"
@@ -144,11 +142,7 @@
                                   asp-page-handler="SoftDelete"
                                   class="inline-form">
                                 <input type="hidden" name="filePath" value="@file.FilePath" />
-                                <button type="submit"
-                                        class="btn-link"
-                                        title="Slet (flyt til papirkurv)">
-                                    Slet
-                                </button>
+                                <button type="submit" class="btn-link" title="Slet (flyt til papirkurv)">Slet</button>
                             </form>
                         </div>
                     </div>

@@ -1,25 +1,30 @@
 ﻿@page
-@model FileHosting.Pages.Account.LoginModel
-@{
-    ViewData["Title"] = "Login";
-}
+        @model FileHosting.Pages.Account.LoginModel
+        @{
+            ViewData["Title"] = "Login";
+        }
+        
+        <div class="auth-center">
+            <div class="card auth-card">
+                <h2 class="card-title">Log Ind</h2>
+                <p class="card-sub">Indtast Email Adresse</p>
+        
+                <form method="post" novalidate class="auth-form">
+                    <div asp-validation-summary="All" class="validation-summary"></div>
 
-<h2>Login</h2>
+                    <div class="form-row">
+                        <label asp-for="Input.Email" class="form-label"></label>
+                        <input asp-for="Input.Email" class="form-input" placeholder="min@email.dk" autofocus />
+                        <span asp-validation-for="Input.Email" class="validation-msg"></span>
+                    </div>
 
-<form method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="mb-3">
-        <label asp-for="Input.Email" class="form-label"></label>
-        <input asp-for="Input.Email" class="form-control" />
-        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <input type="hidden" asp-for="ReturnUrl" />
 
-    </div>
-
-    <input type="hidden" asp-for="ReturnUrl" />
-
-    <button type="submit" class="btn btn-primary">Sign in</button>
-</form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+                    <button type="submit" class="btn btn-primary btn-full">Log ind</button>
+                </form>
+            </div>
+        </div>
+        
+        @section Scripts {
+            <partial name="_ValidationScriptsPartial" />
+        }

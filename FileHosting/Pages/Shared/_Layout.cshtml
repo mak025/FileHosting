@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FileHosting.styles.css" asp-append-version="true" />
+    <!-- Unified minimal app styles -->
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/filetypes.css" asp-append-version="true" />
     
 </head>
 <body>
@@ -19,28 +22,44 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
+                    <ul class="navbar-nav flex-grow-1">                      
+                        @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
+                        {
+                        <li class="nav-item" id="HomeLink">
                             <a class="nav-link text-dark" asp-area="" asp-page="/FileOverview">Filer</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="UsersLink">
                             <a class="nav-link text-dark" asp-area="" asp-page="/UserOverview">Brugere</a>
                         </li>
-                        <li>
-							<a class="nav-link text-dark" asp-area="" asp-page="/Admin/InviteMember">Invite Member</a>
+                        <!-- only present for admin users-->
+
+                        <li class="nav-item" id="InviteMemberLink">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Admin/InviteMember">Inviter</a>
                         </li>
-                        <li>
-							<a class="nav-link text-dark" asp-area="" asp-page="/Account/Login">Login</a>
-                        </li>
-                        <li>
-							<a class="nav-link text-dark" asp-area="" asp-page="/Account/Logout">Logout</a>
-                        </li>
-                        <li class="nav-item">
+                        }
+                        <li class="nav-item" id="WasteBasketLink">
                             <a class="nav-link text-dark" asp-area="" asp-page="/WasteBasket">Papirkurv</a>
                         </li>
+                        <!-- only present if not logged in-->
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item nav-end" id="LoginLink">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Account/Login">Login</a>
+                            </li>
+                        }
+                        <!-- only present if logged in-->
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item nav-end" id="Logout">
+                                <!-- Use a button that triggers an AJAX POST to the logout handler so the user is logged out
+                                     without being taken to a separate logout page. On success we redirect to Index. -->
+                                <form id="logoutForm" asp-page="/Account/Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="returnUrl" value="@(Url.Page("/Index"))" />
+                                    <button type="button" id="logoutButton" class="btn btn-sm btn-danger" aria-label="Logout">Logout</button>
+                                </form>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -52,15 +71,52 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - FileHosting - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('logoutButton');
+            if (!btn) return;
+            btn.addEventListener('click', function (e) {
+                var form = document.getElementById('logoutForm');
+                if (!form) { window.location.href = '@Url.Page("/Index")'; return; }
+
+                // Get antiforgery token value
+                var tokenInput = form.querySelector('input[name="__RequestVerificationToken"]');
+                var token = tokenInput ? tokenInput.value : '';
+
+                // Build body from form data (includes returnUrl)
+                var formData = new FormData(form);
+                var params = new URLSearchParams();
+                for (var pair of formData.entries()) {
+                    params.append(pair[0], pair[1]);
+                }
+
+                var action = form.getAttribute('action') || '@Url.Page("/Account/Logout")';
+
+                fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    },
+                    body: params.toString()
+                }).then(function (response) {
+                    if (response.ok) {
+                        // Successful logout: redirect to Index (works even if server did additional redirects)
+                        window.location.href = '@Url.Page("/Index")';
+                    } else {
+                        // If something went wrong, still reload to clear auth state on client
+                        window.location.reload();
+                    }
+                }).catch(function () {
+                    window.location.reload();
+                });
+            });
+        })();
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
