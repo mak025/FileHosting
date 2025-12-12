@@ -45,7 +45,7 @@
                        class="search-input" />
                 <button type="submit" class="btn btn-outline">Søg</button>
             </form>
-           
+
         </div>
     </header>
     <!-- UPLOAD SECTION -->
@@ -90,8 +90,36 @@
                             @file.Name
                         </div>
                     </div>
+                    @if (Model.IsAdmin)
+                    {
+                        <form method="post" asp-page-handler="Permissions" class="permissions-form">
+                            @Html.AntiForgeryToken()
 
-                   
+                            <input type="hidden" name="fileId" value="@file.ID" />
+
+                            <details>
+                                <summary class="btn btn-outline">Permissions</summary>
+
+                                <div class="permissions-dropdown">
+                                    @foreach (var user in Model.AllUsers)
+                                    {
+                                        var isChecked = file.UsersWithPermission.Any(u => u.ID == user.ID);
+
+                                        <label class="permission-item">
+                                            <input type="checkbox"
+                                                   name="userIds"
+                                                   value="@user.ID"
+                                                   @(isChecked ? "checked" : "") />
+                                            @user.Name
+                                        </label>
+                                    }
+
+                                    <button type="submit" class="btn btn-primary">Gem</button>
+                                </div>
+                            </details>
+                        </form>
+                    }
+
                     <div class="file-meta" style="justify-content: space-between; width: 100%;">
                         <div style="display:flex;align-items:center;gap:8px;">
                             <div class="file-avatar"></div>

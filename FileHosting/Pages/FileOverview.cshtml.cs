@@ -25,17 +25,31 @@ namespace FileHosting.Pages
         [BindProperty]
         public List<IFormFile> Upload { get; set; } = new();
 
+        public List<User> AllUsers { get; set; } = new();
+        public bool IsAdmin { get; private set; }
+
         public List<StoredFileInfo> Files { get; set; } = new();
 
         public async Task OnGetAsync()
         {
-            // Get the user ID from claims
-            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-            {
-                // Optionally: handle unauthenticated or invalid user
-                Files = new List<StoredFileInfo>();
+            var userIdSt = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdSt) || !int.TryParse(userIdSt, out var userId))
                 return;
+
+            var currentUser = await _dbContext.Users.FirstAsync(u => u.ID == userId);
+
+            IsAdmin = currentUser.Type == FileHostingBackend.Models.User.UserType.Admin
+                   || currentUser.Type == FileHostingBackend.Models.User.UserType.SysAdmin;
+
+            Files = await _dbContext.StoredFiles
+                .Include(f => f.UsersWithPermission)
+                .ToListAsync();
+
+            if (IsAdmin)
+            {
+                AllUsers = await _dbContext.Users
+                    .OrderBy(u => u.Name)
+                    .ToListAsync();
             }
 
             // Find the user in the database
@@ -64,6 +78,39 @@ namespace FileHosting.Pages
                     .ToList();
             }
         }
+      public async Task<IActionResult> OnPostPermissionsAsync([FromForm] int fileId, [FromForm] List<int> userIds)
+        {
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var currentUserId))
+                return Unauthorized();
+
+            var currentUser = await _dbContext.Users.FirstAsync(u => u.ID == currentUserId);
+
+            var isAdmin = currentUser.Type == FileHostingBackend.Models.User.UserType.Admin
+                       || currentUser.Type == FileHostingBackend.Models.User.UserType.SysAdmin;
+
+            if (!isAdmin)
+                return Forbid();
+
+            var file = await _dbContext.StoredFiles
+                .Include(f => f.UsersWithPermission)
+                .FirstOrDefaultAsync(f => f.ID == fileId);
+
+            if (file == null)
+                return NotFound();
+
+            file.UsersWithPermission.Clear();
+
+            foreach (var userId in userIds)
+            {
+                var user = await _dbContext.Users.FindAsync(userId);
+                if (user != null)
+                    file.UsersWithPermission.Add(user);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return RedirectToPage();
+        } 
 
         public async Task<IActionResult> OnPostUploadAsync()
         {

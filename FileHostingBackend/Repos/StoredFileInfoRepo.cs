@@ -56,29 +56,24 @@ namespace FileHostingBackend.Repos
                 throw new Exception("Error ensuring bucket exists", ex);
             }
         }
-       
+
 
         public async Task<string> UploadFileAsync(IFormFile file, User user)
         {
             if (file == null || file.Length == 0)
-            {
                 throw new ArgumentNullException(nameof(file));
-            }
 
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
 
-            using var stream = file.OpenReadStream(); // scope
-            {
-                var putArgs = new PutObjectArgs() // research builder patterns
-                    .WithBucket(_bucketName)
-                    .WithObject(fileName)
-                    .WithStreamData(stream)
-                    .WithObjectSize(file.Length)
-                    .WithContentType(file.ContentType);
+            using var stream = file.OpenReadStream();
+            var putArgs = new PutObjectArgs()
+                .WithBucket(_bucketName)
+                .WithObject(fileName)
+                .WithStreamData(stream)
+                .WithObjectSize(file.Length)
+                .WithContentType(file.ContentType);
 
-                await _minioClient.PutObjectAsync(putArgs);
-            }
-         
+            await _minioClient.PutObjectAsync(putArgs);
 
             var metadata = new StoredFileInfo
             {
@@ -89,8 +84,24 @@ namespace FileHostingBackend.Repos
                 BucketName = _bucketName,
                 UploadedAt = DateTimeOffset.UtcNow,
                 IsSoftDeleted = false,
-                UploadedByID = user.ID
+                UploadedByID = user.ID,
+                
             };
+
+            var isAdmin =
+                user.Type == FileHostingBackend.Models.User.UserType.Admin ||
+                user.Type == FileHostingBackend.Models.User.UserType.SysAdmin;
+
+            if (isAdmin)
+            {
+         
+                var allUsers = await _dbContext.Users.ToListAsync();
+                metadata.UsersWithPermission.AddRange(allUsers);
+            }
+            else
+            {
+                metadata.UsersWithPermission.Add(user);
+            }
 
             _dbContext.StoredFiles.Add(metadata);
             await _dbContext.SaveChangesAsync();
@@ -154,25 +165,23 @@ namespace FileHostingBackend.Repos
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public async Task UpdateUserPermissionsAsync(int fileId, List<User> users)
-        {             
+        public async Task UpdateUserPermissionsAsync(int fileId, List<int> userIds)
+        {
             var file = await _dbContext.StoredFiles
-                .Include(f => f.UsersWithPermission)
-                .FirstOrDefaultAsync(f => f.ID == fileId);
+               .Include(f => f.UsersWithPermission)
+               .FirstOrDefaultAsync(f => f.ID == fileId);
+
             if (file == null)
-            {
                 throw new Exception("Filen kunne ikke findes.");
-            }
-                file.UsersWithPermission.Clear();
-            try
-            {
-                file.UsersWithPermission = users;
-                await _dbContext.SaveChangesAsync();
-            }            
-            catch (Exception ex)
-            {
-                throw new Exception("Der opstod en fejl under opdatering af filrettighederne.", ex);
-            }
+
+            var selectedUsers = await _dbContext.Users
+                .Where(u => userIds.Contains(u.ID))
+                .ToListAsync();
+
+            file.UsersWithPermission.Clear();
+            file.UsersWithPermission.AddRange(selectedUsers);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         #region Download Function

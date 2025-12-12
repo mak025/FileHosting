@@ -16,7 +16,7 @@ namespace FileHostingBackend.Repos
         // Required members for wastebasket/restore
         Task<List<StoredFileInfo>> GetDeletedFilesAsync();
         Task RestoreAsync(string fileName); //Task PermanentlyDeleteAsync(string fileName);
-        Task UpdateUserPermissionsAsync(int fileId, List<User> user);
+        Task UpdateUserPermissionsAsync(int fileId, List<int> userIds);
 
         #region Download Function
         // Prototype: get a presigned URL for direct download from storage

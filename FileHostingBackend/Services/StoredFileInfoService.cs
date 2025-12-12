@@ -48,9 +48,9 @@ namespace FileHostingBackend.Services
             await _storedFileInfoRepo.RestoreAsync(fileName);
         }
 
-        public async Task UpdateUserPermissionsAsync(int fileId, List<User> users)
-        {             
-            await _storedFileInfoRepo.UpdateUserPermissionsAsync(fileId, users);
+        public async Task UpdateUserPermissionsAsync(int fileId, List<int> userIds) 
+        { 
+            await _storedFileInfoRepo.UpdateUserPermissionsAsync(fileId, userIds);
         }
         public async Task<List<StoredFileInfo>> GetFilesWithPermissionAsync(int userId)
         {             
