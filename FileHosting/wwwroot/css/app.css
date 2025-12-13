@@ -51,7 +51,7 @@ body{
 .navbar-toggler-icon { background-size: 18px 18px; }
 
 /* nav links */
-.navbar-nav .nav-link {
+.navbar-nav .nav-link .nav-usertile{
   padding: 0.5rem 0.6rem;
   font-size: var(--nav-font-size);
   color: rgba(15,23,42,0.9);

@@ -458,3 +458,45 @@ body {
 .app-shell.single-column {
     grid-template-columns: minmax(0, 1fr);
 }
+
+/* File: wwwroot/css/site.css
+   Add the following at the end of the file (or merge into Navbar / site rules) */
+
+/* Make the user tile align & size like nav links */
+.nav-item.nav-usertile,
+.nav-usertile {
+    display: flex;                 /* align like nav items */
+    align-items: center;           /* vertical center */
+    padding: 0.5rem 1rem;          /* same vertical rhythm as .nav-link */
+    margin-left: 0.25rem;
+    color: var(--bs-body-color, #212529); /* match default text color */
+    font-weight: 600;              /* slightly emphasized */
+    font-size: 0.95rem;
+    line-height: 1;                /* consistent line height */
+    border-radius: 0.25rem;        /* small rounding like buttons */
+    cursor: default;               /* not a clickable link */
+    white-space: nowrap;           /* avoid wrapping the username */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Visual affordance similar to nav links on hover/focus */
+.nav-item.nav-usertile:hover,
+.nav-item.nav-usertile:focus,
+.nav-usertile:hover,
+.nav-usertile:focus {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: var(--bs-body-color, #212529);
+    text-decoration: none;
+}
+
+/* Keep layout consistent on small screens */
+@media (max-width: 575.98px) {
+    .nav-item.nav-usertile,
+    .nav-usertile {
+        padding-top: 0.375rem;
+        padding-bottom: 0.375rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}

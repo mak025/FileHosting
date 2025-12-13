@@ -60,6 +60,10 @@
                                 </form>
                             </li>
                         }
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-usertile">@User.Identity.Name.ToUpper()</li>
+                        }
                     </ul>
                 </div>
             </div>
