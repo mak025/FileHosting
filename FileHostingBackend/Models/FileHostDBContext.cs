@@ -26,6 +26,8 @@ namespace FileHostingBackend.Models
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<StoredFileInfo>()
+                .HasOne(u => u.UploadedBy);
             // Explicit many-to-many relationship between StoredFileInfo and User for file permissions
             modelBuilder.Entity<StoredFileInfo>()
                 .HasMany(s => s.UsersWithPermission)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,8 @@ namespace FileHostingBackend.Models
         public string Name { get; set; }
         public int Size { get; set; } // Size in bytes
         public DateTimeOffset UploadedAt { get; set; }
-        public int UploadedByID { get; set; }
+        public int UploadedByID { get; set; } // Foreign key
+        public User UploadedBy { get; set; }
         public DateTimeOffset LastModifiedAt { get; set; }
         public string FilePath { get; set; } // Path in the storage system
         public string? ShareLink { get; set; } = String.Empty; // Public shareable link. String.Empty default value

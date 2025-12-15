@@ -84,7 +84,7 @@ namespace FileHostingBackend.Repos
                 BucketName = _bucketName,
                 UploadedAt = DateTimeOffset.UtcNow,
                 IsSoftDeleted = false,
-                UploadedByID = user.ID,
+                UploadedBy = user,
                 
             };
 
