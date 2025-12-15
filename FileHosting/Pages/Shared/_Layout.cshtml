@@ -17,6 +17,11 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">FileHosting</a>
+                @* Hidden logout form available on every page (antiforgery token included) *@
+                <form id="logoutForm" asp-page="/Account/Logout" method="post" style="display:none;">
+                    @Html.AntiForgeryToken()
+                </form>
+                
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -36,10 +41,10 @@
                         <li class="nav-item" id="InviteMemberLink">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Admin/InviteMember">Inviter</a>
                         </li>
-                        }
                         <li class="nav-item" id="WasteBasketLink">
                             <a class="nav-link text-dark" asp-area="" asp-page="/WasteBasket">Papirkurv</a>
                         </li>
+                        }
                         <!-- only present if not logged in-->
                         @if (!User.Identity.IsAuthenticated)
                         {
@@ -51,13 +56,10 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item nav-end" id="Logout">
-                                <!-- Use a button that triggers an AJAX POST to the logout handler so the user is logged out
-                                     without being taken to a separate logout page. On success we redirect to Index. -->
-                                <form id="logoutForm" asp-page="/Account/Logout" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="returnUrl" value="@(Url.Page("/Index"))" />
-                                    <button type="button" id="logoutButton" class="btn btn-sm btn-danger" aria-label="Logout">Logout</button>
-                                </form>
+                                @* give the logout anchor the id the script expects; use '#' so JS handles the POST *@
+                                <a href="#" id="logoutButton">
+                                    <span class="nav-link text-dark">Logout</span>
+                                </a>
                             </li>
                         }
                         @if (User.Identity.IsAuthenticated)
@@ -84,6 +86,7 @@
             var btn = document.getElementById('logoutButton');
             if (!btn) return;
             btn.addEventListener('click', function (e) {
+                e.preventDefault(); // prevent anchor navigation so we can POST
                 var form = document.getElementById('logoutForm');
                 if (!form) { window.location.href = '@Url.Page("/Index")'; return; }
 
@@ -91,7 +94,7 @@
                 var tokenInput = form.querySelector('input[name="__RequestVerificationToken"]');
                 var token = tokenInput ? tokenInput.value : '';
 
-                // Build body from form data (includes returnUrl)
+                // Build body from form data (includes returnUrl if present)
                 var formData = new FormData(form);
                 var params = new URLSearchParams();
                 for (var pair of formData.entries()) {
@@ -109,10 +112,8 @@
                     body: params.toString()
                 }).then(function (response) {
                     if (response.ok) {
-                        // Successful logout: redirect to Index (works even if server did additional redirects)
                         window.location.href = '@Url.Page("/Index")';
                     } else {
-                        // If something went wrong, still reload to clear auth state on client
                         window.location.reload();
                     }
                 }).catch(function () {
