@@ -1,5 +1,6 @@
 using FileHostingBackend.Models;
 using FileHostingBackend.Repos;
+using FileHostingBackend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,11 +15,13 @@ namespace FileHosting.Pages
     public class UserOverviewModel : PageModel
     {
         private readonly FileHostDBContext _dbContext;
+        private readonly UserService _userService;
 
-        public UserOverviewModel(FileHostDBContext dbContext)
+        public UserOverviewModel(FileHostDBContext dbContext, UserService userService)
         {
 
             _dbContext = dbContext;
+            _userService = userService;
         }
 
         
@@ -44,8 +47,7 @@ namespace FileHosting.Pages
             if (user == null)
                 return NotFound();
         
-            _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
+            await _userService.DeleteUserAsync(userId);
 
             return RedirectToPage();
         }
