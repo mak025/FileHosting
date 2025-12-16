@@ -101,7 +101,7 @@ namespace FileHostingBackend.Repos
         {
             try
             {
-                var user = _dbContext.Users.Find(userId);
+                var user = await _dbContext.Users.FindAsync(userId);
                 if (user == null)
                 {
                     throw new Exception("Brugeren blev ikke fundet");
@@ -136,7 +136,7 @@ namespace FileHostingBackend.Repos
         {
             try
             {
-                var user = _dbContext.Users.Find(userId);
+                var user = await _dbContext.Users.FindAsync(userId);
                 if (user != null)
                 {
                     _dbContext.Users.Remove(user);
