@@ -33,14 +33,14 @@ namespace FileHostingBackend.Services
             return _userRepo.UpdateUserAsync(userId, name, email, address, phoneNumber, userType);
         }
 
-        public void DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int userId)
         {
-            _userRepo.DeleteUserAsync(userId);
+            await _userRepo.DeleteUserAsync(userId);
         }
 
         public async Task UpdateFilePermissionsAsync(int userId, List<StoredFileInfo> files)
         { 
-            _userRepo.UpdateFilePermissionsAsync(userId, files);
+            await _userRepo.UpdateFilePermissionsAsync(userId, files);
         }
     }
 }
