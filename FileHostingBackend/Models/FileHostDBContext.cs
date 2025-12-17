@@ -16,10 +16,6 @@ namespace FileHostingBackend.Models
         public DbSet<Member> Members { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<StoredFileInfo> StoredFiles { get; set; }
-        public DbSet<Folder> Folders
-        {
-            get; set;
-        }
         public DbSet<Invite> Invites { get; set; }
         public DbSet<Union> Union { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
