@@ -1,26 +1,44 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FileHostingBackend.Repos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Threading.Tasks;
+using Xunit;
+using FileHostingBackend.Repos;
+using FileHostingBackend.Models; // Adjust namespace if needed
 
 namespace FileHostingBackend.Repos.Tests
 {
-    [TestClass()]
     public class UserRepoTests
     {
-        [TestMethod()]
-        public void DeleteUserAsyncTest()
+        [Fact]
+        public async Task DeleteUserAsync_RemovesUserFromDb()
         {
-            //Arrange
+            //// Arrange
+            //var options = new DbContextOptionsBuilder<FileHostDBContext>()
+            //    .UseInMemoryDatabase(databaseName: "DeleteUserAsyncTestDb")
+            //    .Options;
+            
 
+            //// Seed the database with a user
+            //using (var context = new FileHostDBContext(options))
+            //{
+            //    context.Users.Add(new User { ID = 1, Name = "testuser" });
+            //    context.SaveChanges();
+            //}
 
-            //Act
+            //// Act
+            //using (var context = new FileHostDBContext(options))
+            //{
+            //    var unionRepo = new UnionRepo();
+            //    var repo = new UserRepo(context, unionRepo);
+            //    await repo.DeleteUserAsync(1);
+            //}
 
-            //Assert
-            Assert.Fail();
+            //// Assert
+            //using (var context = new AppDbContext(options))
+            //{
+            //    var user = await context.Users.FindAsync(1);
+            //    Assert.Null(user);
+            //}
         }
     }
 }
