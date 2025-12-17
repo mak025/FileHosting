@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FileHostingBackend.Repos;
+﻿using FileHostingBackend.Repos;
 using FileHostingBackend.Models;
 
 namespace FileHostingBackend.Services
@@ -26,32 +21,15 @@ namespace FileHostingBackend.Services
         {
             return await _storedFileInfoRepo.GetAllFilesAsync();
         }
-        
-        
-        public async Task DeleteFileAsync(string fileName)
-        {
-            await _storedFileInfoRepo.DeleteFileAsync(fileName);
-        }
+
+
         public async Task SoftDeleteAsync(string fileName)
         {
             await _storedFileInfoRepo.SoftDeleteAsync(fileName);
         }
 
         // New wrappers for wastebasket
-        public async Task<List<StoredFileInfo>> GetDeletedFilesAsync()
-        {
-            return await _storedFileInfoRepo.GetDeletedFilesAsync();
-        }
 
-        public async Task RestoreAsync(string fileName)
-        {
-            await _storedFileInfoRepo.RestoreAsync(fileName);
-        }
-
-        public async Task UpdateUserPermissionsAsync(int fileId, List<int> userIds) 
-        { 
-            await _storedFileInfoRepo.UpdateUserPermissionsAsync(fileId, userIds);
-        }
         public async Task<List<StoredFileInfo>> GetFilesWithPermissionAsync(int userId)
         {             
             return await _storedFileInfoRepo.GetFilesWithPermissionAsync(userId);
@@ -59,10 +37,6 @@ namespace FileHostingBackend.Services
 
         #region Download Function
         // Prototype wrapper: get presigned download URL from the repo
-        public async Task<string> GetDownloadUrlAsync(string filePath, TimeSpan? expiry = null)
-        {
-            return await _storedFileInfoRepo.GetPresignedUrlAsync(filePath, expiry);
-        }
 
         // New: wrapper for server-side streaming download
         public async Task<(System.IO.Stream Stream, string ContentType)> GetObjectWithContentTypeAsync(string filePath)

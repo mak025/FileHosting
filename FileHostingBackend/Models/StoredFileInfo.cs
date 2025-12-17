@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FileHostingBackend.Models
+﻿namespace FileHostingBackend.Models
 {
     public class StoredFileInfo
     {
         public int ID { get; private set; }
-        public Folder? Folder { get; set; }
         public string Name { get; set; }
         public int Size { get; set; } // Size in bytes
         public DateTimeOffset UploadedAt { get; set; }

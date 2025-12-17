@@ -2,9 +2,6 @@ using FileHostingBackend.Models;
 using FileHostingBackend.Repos;
 using FileHostingBackend.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 
@@ -64,7 +61,6 @@ namespace FileHosting
             builder.Services.AddScoped<UserService>();
             //Register Union repo
             builder.Services.AddScoped<IUnionRepo, UnionRepo>();
-            builder.Services.AddScoped<UnionService>();
 
             var app = builder.Build();
 

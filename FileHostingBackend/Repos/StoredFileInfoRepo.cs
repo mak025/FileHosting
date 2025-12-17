@@ -5,13 +5,8 @@ using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO; // required for Path
+
+// required for Path
 
 namespace FileHostingBackend.Repos
 {
@@ -65,7 +60,7 @@ namespace FileHostingBackend.Repos
 
             var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
 
-            using var stream = file.OpenReadStream();
+            await using var stream = file.OpenReadStream();
             var putArgs = new PutObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(fileName)

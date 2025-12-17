@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FileHostingBackend.Models
+﻿namespace FileHostingBackend.Models
 {
     public class Invite
     {

@@ -1,8 +1,6 @@
 using FileHostingBackend.Models;
-using FileHostingBackend.Repos;
 using FileHostingBackend.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;

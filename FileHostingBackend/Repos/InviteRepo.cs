@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using FileHostingBackend.Models;
+﻿using FileHostingBackend.Models;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -106,43 +102,5 @@ namespace FileHostingBackend.Repos
                 return (false, string.Empty, ex.Message);
             }
         }
-
-        /// <summary>
-        /// Atomically mark an invite as used if it exists, matches the invitee email and is not expired/used.
-        /// Accepts the URL-encoded token (same value sent in the invite link).
-        /// Returns (success, reason).
-        /// </summary>
-
-        public async Task<(bool success, string reason)> TryConsumeInviteAsync(string urlEncodedToken, string inviteeEmail)
-        {
-            try
-            {
-                var protectedToken = System.Web.HttpUtility.UrlDecode(urlEncodedToken);
-
-                var normalizedEmail = inviteeEmail?.ToLower();
-
-                var invite = await _db.Invites.FirstOrDefaultAsync(i =>
-                    i.Token == protectedToken &&
-                    i.InviteeEmail != null &&
-                    i.InviteeEmail.ToLower() == normalizedEmail &&
-                    !i.Used);
-
-                if (invite == null)
-                    return (false, "Invite not found or already used.");
-
-                if (invite.ExpiresAt < DateTimeOffset.UtcNow)
-                    return (false, "Invite expired.");
-
-                invite.Used = true;
-                await _db.SaveChangesAsync();
-
-                return (true, string.Empty);
-            }
-            catch (Exception ex)
-            {
-                return (false, ex.Message);
-            }
-        }
-
     }
 }

@@ -1,12 +1,9 @@
 using FileHostingBackend.Models;
-using FileHostingBackend.Repos;
 using FileHostingBackend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 
 
 namespace FileHosting.Pages

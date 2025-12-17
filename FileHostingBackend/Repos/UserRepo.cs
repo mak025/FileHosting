@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FileHostingBackend.Models;
-using FileHostingBackend.Repos;
-using Microsoft.Data.SqlClient;
+﻿using FileHostingBackend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Repos
