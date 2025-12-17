@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileHostingBackend", "FileHostingBackend\FileHostingBackend.csproj", "{4F9D2709-AF8F-414E-AC11-07CBAC79BF56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileHostingBackendTests", "FileHostingBackendTests\FileHostingBackendTests.csproj", "{38231A7A-8EEC-4943-8AAE-D747F86ECCFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4F9D2709-AF8F-414E-AC11-07CBAC79BF56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F9D2709-AF8F-414E-AC11-07CBAC79BF56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F9D2709-AF8F-414E-AC11-07CBAC79BF56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38231A7A-8EEC-4943-8AAE-D747F86ECCFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38231A7A-8EEC-4943-8AAE-D747F86ECCFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38231A7A-8EEC-4943-8AAE-D747F86ECCFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38231A7A-8EEC-4943-8AAE-D747F86ECCFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
