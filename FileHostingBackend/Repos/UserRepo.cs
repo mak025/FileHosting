@@ -72,59 +72,6 @@ namespace FileHostingBackend.Repos
             }
         }
 
-        public async Task<User?> GetUserByIdAsync(int userId)
-        {
-            try
-            {
-                return await _dbContext.Users
-                    .Include(u => u.Union)
-                    .FirstOrDefaultAsync(u => u.ID == userId);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                throw new Exception("Der opstod en databasefejl under hentning af brugeren.", dbEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Der opstod en fejl under hentning af brugeren.", ex);
-            }
-        }
-
-        public async Task UpdateUserAsync(int userId, string name, string email, string address, string phoneNumber, int userType)
-        {
-            try
-            {
-                var user = await _dbContext.Users.FindAsync(userId);
-                if (user == null)
-                {
-                    throw new Exception("Brugeren blev ikke fundet");
-                }
-                if (Enum.IsDefined(typeof(User.UserType), userType))
-                {
-                    user.Type = (User.UserType)userType;
-                }
-                else
-                {
-                    user.Type = User.UserType.Member;
-                }
-                user.Name = name;
-                user.Email = email;
-                user.Address = address;
-                user.PhoneNumber = phoneNumber;
-                user.Type = (User.UserType)userType;
-
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException dbEx)
-            {
-                throw new Exception("Der opstod en databasefejl under opdatering af brugeren.", dbEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Der opstod en fejl under opdatering af brugeren.", ex);
-            }
-        }
-
         public async Task DeleteUserAsync(int userId)
         {
             try
@@ -145,29 +92,6 @@ namespace FileHostingBackend.Repos
             {
                 throw new Exception("Der opstod en fejl under sletning af brugeren.", ex);
 
-            }
-        }
-        public async Task UpdateFilePermissionsAsync(int userId, List<StoredFileInfo> files)
-        {
-            try
-            {
-                var user = await _dbContext.Users
-                    .Include(u => u.FilePermissions)
-                    .FirstOrDefaultAsync(u => u.ID == userId);
-                if (user == null)
-                {
-                    throw new Exception("Brugeren blev ikke fundet");
-                }
-                user.FilePermissions = files;
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateException dbEx)
-            {
-                throw new Exception("Der opstod en databasefejl under opdatering af brugerens filrettigheder.", dbEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Der opstod en fejl under opdatering af brugerens filrettigheder.", ex);
             }
         }
     }
