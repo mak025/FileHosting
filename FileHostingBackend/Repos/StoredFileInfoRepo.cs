@@ -24,7 +24,7 @@ namespace FileHostingBackend.Repos
 
             _minioClient = new MinioClient()
                 .WithEndpoint(_settings.Endpoint)
-                .WithCredentials(_settings.AccessKey, _settings.SecretKey)
+                .WithCredentials(_settings.AccessKey, _settings.SecretKey).WithSSL(_settings.UseSSL)
                 .Build();
 
             // not ideal but OK for now
