@@ -22,24 +22,24 @@
         </div>
 
         <div class="field">
-            <label asp-for="Input.Name">Full name</label>
+            <label asp-for="Input.Name">Navn</label>
             <input asp-for="Input.Name" class="form-control" />
             <span asp-validation-for="Input.Name" class="validation-msg"></span>
         </div>
 
         <div class="field">
-            <label asp-for="Input.Address">Address</label>
+            <label asp-for="Input.Address">Adresse</label>
             <input asp-for="Input.Address" class="form-control" />
         </div>
 
         <div class="field">
-            <label asp-for="Input.PhoneNumber">Phone</label>
+            <label asp-for="Input.PhoneNumber">Telefon</label>
             <input asp-for="Input.PhoneNumber" class="form-control" />
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create account</button>
-            <a class="btn btn-ghost" asp-page="/Account/Login">Sign in</a>
+            <button type="submit" class="btn btn-primary">Opret konto</button>
+            <a class="btn btn-ghost" asp-page="/Account/Login">Log ind</a>
         </div>
     </form>
 </section>
