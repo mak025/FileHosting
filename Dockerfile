@@ -15,12 +15,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 
 RUN apt-get update 
-RUN apt-get install chromium -y
 
 COPY --from=build-env /App/out .
 
 ENV ASPNETCORE_URLS=http://*:3000
-ENV PUPPETEER_EXECUTABLE_PATH "/usr/bin/chromium"
 
 ARG DOCKERFILE_PROJECT
 
