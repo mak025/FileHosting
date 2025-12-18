@@ -20,7 +20,7 @@ namespace FileHosting
             var fallbackConnectionString = "Server=localhost,1433;Database=FileHostingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=true;";
 
             // Prefer configuration value from appsettings.json: "ConnectionStrings:DefaultConnection"
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? fallbackConnectionString;
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
             // Configure EF Core DbContext with the resolved connection string
             builder.Services.AddDbContext<FileHostDBContext>(options =>
