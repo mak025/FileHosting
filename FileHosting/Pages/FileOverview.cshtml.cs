@@ -114,21 +114,21 @@ namespace FileHosting.Pages
         {
             if (Upload == null || !Upload.Any() || Upload.All(f => f == null || f.Length == 0))
             {
-                ModelState.AddModelError("Upload", "Please select at least one file");
+                ModelState.AddModelError("Upload", "Venglist vel en fil");
                 return Page();
             }
 
             var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
-                ModelState.AddModelError("", "User not authenticated.");
+                ModelState.AddModelError("", "Bruger ikke bekræftet.");
                 return Page();
             }
 
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)
             {
-                ModelState.AddModelError("", "User not found.");
+                ModelState.AddModelError("", "Bruger ikke fundet.");
                 return Page();
             }
 
@@ -146,7 +146,7 @@ namespace FileHosting.Pages
             catch (Exception ex)
             {
                 // Log or add a model error so the user sees a failure
-                ModelState.AddModelError("", "Failed to upload files: " + ex.Message);
+                ModelState.AddModelError("", "Kunne ikke uploade fil " + ex.Message);
                 return Page();
             }
 

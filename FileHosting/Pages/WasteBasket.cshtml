@@ -26,7 +26,7 @@
                     
                                             @if (User.IsInRole("Admin") || User.IsInRole("SysAdmin"))
                                             {
-                                                <form method="post" asp-page-handler="Delete" class="inline-form" onsubmit="return confirm('Permanently delete this file?');">
+                                                <form method="post" asp-page-handler="Delete" class="inline-form" onsubmit="return confirm('Er du sikker på du vil slette?');">
                                                     <input type="hidden" name="filePath" value="@file.FilePath" />
                                                     <button type="submit" class="btn btn-delete" aria-label="Delete @file.Name">Slet permanent</button>
                                                 </form>
