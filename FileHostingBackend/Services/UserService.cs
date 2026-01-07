@@ -4,16 +4,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FileHostingBackend.Services
 {
-    public class UserService(IUserRepo userRepo)
+
+    public class UserService
     {
         private readonly FileHostDBContext _dbContext;
-        private readonly IUserRepo _userRepo = userRepo;
+        private readonly IUserRepo _userRepo;
         private readonly IUnionRepo _unionRepo;
 
-        public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? union, int userType)
+        public UserService(IUserRepo userRepo, IUnionRepo unionRepo, FileHostDBContext dbContext)
+        { 
+            _userRepo = userRepo;
+            _unionRepo = unionRepo;
+            _dbContext = dbContext;
+        }
+
+
+        public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
         {
             await _dbContext.Database.BeginTransactionAsync();
-
             try
             {
                 Union union;
@@ -54,7 +62,7 @@ namespace FileHostingBackend.Services
                 await _userRepo.CreateUserAsync(user);
 
                 await _dbContext.Database.CommitTransactionAsync();
-                    }
+            }
             catch (DbUpdateException ex)
             {
                 throw new Exception("Der opstod en fejl i databasen ved oprettelse af bruger.", ex);
@@ -64,7 +72,7 @@ namespace FileHostingBackend.Services
                 throw new Exception("Der opstod en vejl ved oprettelse af bruger.", ex);
             }
         }
-        
+
 
         public async Task DeleteUserAsync(int userId)
         {

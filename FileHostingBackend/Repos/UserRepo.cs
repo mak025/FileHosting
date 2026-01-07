@@ -20,7 +20,7 @@ namespace FileHostingBackend.Repos
         { 
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
-            }
+        }
             
 
 
