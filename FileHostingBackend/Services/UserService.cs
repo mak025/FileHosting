@@ -18,7 +18,7 @@ namespace FileHostingBackend.Services
             _dbContext = dbContext;
         }
 
-
+        //SERVICE CHANGES: CreateUserAsync now handles all user creation logic, including union assignment and error handling.
         public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
         {
             await _dbContext.Database.BeginTransactionAsync();

@@ -15,7 +15,7 @@ namespace FileHostingBackend.Repos
             
         }
 
-
+        //SERVICE CHANGES: CreateUserAsync now takes a User object directly and all error handling and user validation has been moved to the service layer.
         public async Task CreateUserAsync(User user)
         { 
                 _dbContext.Users.Add(user);
