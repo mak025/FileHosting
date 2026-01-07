@@ -16,61 +16,13 @@ namespace FileHostingBackend.Repos
         }
 
 
-        public async Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionIdFromInvite, int userType)
+        public async Task CreateUserAsync(User user)
         { 
-            await _dbContext.Database.BeginTransactionAsync();
-            
-            try
-            {
-                Union union;
-                
-                if (unionIdFromInvite.HasValue && unionIdFromInvite.Value > 0)
-                {
-                    union = await _dbContext.Union.FirstOrDefaultAsync(u => u.UnionId == unionIdFromInvite.Value);
-                    
-                    if (union == null)
-                    {
-                        union = await _unionRepo.GetOrCreateDefaultUnionAsync();
-                    }
-                }
-                else
-                {
-                    union = await _unionRepo.GetOrCreateDefaultUnionAsync();
-                }
-
-                User.UserType typeEnums;
-                if (Enum.IsDefined(typeof(User.UserType), userType))
-                {
-                    typeEnums = (User.UserType)userType;
-                }
-                else
-                {
-                    typeEnums = User.UserType.Member;
-                }
-                
-                var user = new User
-                {
-                    Name = name,
-                    Email = email,
-                    Address = address,
-                    PhoneNumber = phoneNumber,
-                    Union = union,
-                    Type = typeEnums
-                };
-
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
-                await _dbContext.Database.CommitTransactionAsync();
             }
-            catch (DbUpdateException ex)
-            {
-                throw new Exception("Der opstod en fejl i databasen ved oprettelse af bruger.", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Der opstod en vejl ved oprettelse af bruger.", ex);
-            }
-        }
+            
+
 
         public async Task DeleteUserAsync(int userId)
         {

@@ -1,8 +1,9 @@
-﻿namespace FileHostingBackend.Repos
+﻿using FileHostingBackend.Models;
+namespace FileHostingBackend.Repos
 {
     public interface IUserRepo
     {
-        Task CreateUserAsync(string name, string email, string address, string phoneNumber, int? unionId, int userType);
+        Task CreateUserAsync(User user);
         Task DeleteUserAsync(int userId);
     }
 }
