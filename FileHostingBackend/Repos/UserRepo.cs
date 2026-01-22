@@ -5,8 +5,8 @@ namespace FileHostingBackend.Repos
 {
     public class UserRepo : IUserRepo 
     {
-        private readonly FileHostDBContext _dbContext;
-        private readonly IUnionRepo _unionRepo;
+        private readonly FileHostDBContext _dbContext; // Database context reference
+        private readonly IUnionRepo _unionRepo; // Added union repository reference
 
         public UserRepo(FileHostDBContext dbContext, IUnionRepo unionrepo)
         {
@@ -16,7 +16,7 @@ namespace FileHostingBackend.Repos
         }
 
         //SERVICE CHANGES: CreateUserAsync now takes a User object directly and all error handling and user validation has been moved to the service layer.
-        public async Task CreateUserAsync(User user)
+        public async Task CreateUserAsync(User user) 
         { 
                 _dbContext.Users.Add(user);
                 await _dbContext.SaveChangesAsync();
@@ -24,11 +24,11 @@ namespace FileHostingBackend.Repos
             
 
 
-        public async Task DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int userId) // Delete a user by their ID
         {
             try
             {
-                var user = await _dbContext.Users.FindAsync(userId);
+                var user = await _dbContext.Users.FindAsync(userId); // Find the user by ID
                 if (user != null)
                 {
                     _dbContext.Users.Remove(user);

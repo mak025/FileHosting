@@ -22,48 +22,48 @@ namespace FileHosting.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } // Pre-fill email and token
 
-        public string Token { get; set; }
-        public string ErrorMessage { get; set; }
+        public string Token { get; set; } // Invite token
+        public string ErrorMessage { get; set; } // Error message to display
 
-        public class InputModel
+        public class InputModel // Form input model
         {
-            [Required]
-            [EmailAddress]
+            [Required] // Email is required
+            [EmailAddress] // Must be a valid email address
             public string Email { get; set; }
 
-            [Required]
+            [Required] // Name is required
             public string Name { get; set; }
 
             public string Address { get; set; }
 
             public string PhoneNumber { get; set; }
 
-            [Required]
+            [Required] // Token is required
             public string Token { get; set; }
         }
 
-        public IActionResult OnGet(string token, string email)
+        public IActionResult OnGet(string token, string email) // Accept invite link with token and email
         {
-            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email)) // Validate parameters
             {
                 ErrorMessage = "Invalid invite link.";
                 return Page();
             }
 
-            var validation = _inviteService.ValidateToken(token);
-            if (!validation.success || !string.Equals(validation.email, email, StringComparison.OrdinalIgnoreCase))
+            var validation = _inviteService.ValidateToken(token); // Validate the token
+            if (!validation.success || !string.Equals(validation.email, email, StringComparison.OrdinalIgnoreCase)) // Check if token is valid and matches email
             {
                 ErrorMessage = string.IsNullOrEmpty(validation.reason) ? "Invalid or expired invite." : validation.reason;
                 return Page();
             }
 
-            Input = new InputModel { Email = email, Token = token };
+            Input = new InputModel { Email = email, Token = token }; // Pre-fill email and token
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync() // Handle form submission
         {
             if (!ModelState.IsValid)
                 return Page();
@@ -71,7 +71,7 @@ namespace FileHosting.Pages.Account
             var validation = _inviteService.ValidateToken(Input.Token);
             if (!validation.success || !string.Equals(validation.email, Input.Email, StringComparison.OrdinalIgnoreCase))
             {
-                ModelState.AddModelError(string.Empty, "Invalid or expired invite token.");
+                ModelState.AddModelError(string.Empty, "Invalid or expired invite token."); // Add model error
                 ErrorMessage = "Invalid or expired invite token.";
                 return Page();
             }
@@ -85,7 +85,7 @@ namespace FileHosting.Pages.Account
             // Create user through the service/repo layer.
             try
             {
-                 await _userService.CreateUserAsync(
+                 await _userService.CreateUserAsync( // Create the user
                     Input.Name,
                     Input.Email,
                     Input.Address ?? string.Empty,

@@ -21,7 +21,7 @@ namespace FileHostingBackend.Repos
         }
 
         // Signature adjusted to match InviteMember call site
-        public async Task<string> CreateAndSendInviteAsync(string email, int invitedByUserId, string baseUrl, TimeSpan validFor)
+        public async Task<string> CreateAndSendInviteAsync(string email, int invitedByUserId, string baseUrl, TimeSpan validFor) // Returns the token
         {
             var expires = DateTimeOffset.UtcNow.Add(validFor);
 
@@ -44,17 +44,17 @@ namespace FileHostingBackend.Repos
             _db.Add(invite);
             await _db.SaveChangesAsync();
 
-            var acceptUrl = $"{baseUrl.TrimEnd('/')}/Account/AcceptInvite?token={urlToken}&email={System.Web.HttpUtility.UrlEncode(email)}";
+            var acceptUrl = $"{baseUrl.TrimEnd('/')}/Account/AcceptInvite?token={urlToken}&email={System.Web.HttpUtility.UrlEncode(email)}"; // Construct acceptance URL
 
             await SendInviteEmailAsync(email, acceptUrl);
 
             return invite.Token;
         }
 
-        private async Task SendInviteEmailAsync(string toEmail, string acceptUrl)
+        private async Task SendInviteEmailAsync(string toEmail, string acceptUrl) // Send the invitation email
         {
-            var msg = new MimeMessage();
-            msg.From.Add(MailboxAddress.Parse(_emailSettings.Sender));
+            var msg = new MimeMessage(); // Create a new email message
+            msg.From.Add(MailboxAddress.Parse(_emailSettings.Sender)); // Set sender address
             msg.To.Add(MailboxAddress.Parse(toEmail));
             msg.Subject = "Du er inviteret! � Opret din konto";
 
@@ -70,16 +70,16 @@ namespace FileHostingBackend.Repos
             msg.Body = new BodyBuilder { HtmlBody = body }.ToMessageBody();
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_emailSettings.SMTPServer, _emailSettings.Port, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_emailSettings.UserName, _emailSettings.Password);
-            await smtp.SendAsync(msg);
-            await smtp.DisconnectAsync(true);
+            await smtp.ConnectAsync(_emailSettings.SMTPServer, _emailSettings.Port, SecureSocketOptions.StartTls); // Use StartTLS
+            await smtp.AuthenticateAsync(_emailSettings.UserName, _emailSettings.Password); // Authenticate
+            await smtp.SendAsync(msg); // Send the email
+            await smtp.DisconnectAsync(true); // Disconnect
         }
 
         /// <summary>
         /// Validate the token payload (unprotect + check expiry). Returns (success, email, reason).
         /// </summary>
-        public (bool success, string email, string reason) ValidateToken(string urlEncodedToken)
+        public (bool success, string email, string reason) ValidateToken(string urlEncodedToken) // Returns (success, email, reason)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace FileHostingBackend.Repos
             }
             catch (Exception ex)
             {
-                return (false, string.Empty, ex.Message);
+                return (false, string.Empty, ex.Message); // Unprotect failed or other error
             }
         }
     }

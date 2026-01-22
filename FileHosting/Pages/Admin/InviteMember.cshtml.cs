@@ -10,7 +10,7 @@ namespace FileHosting.Pages.Admin
     [Authorize(Policy = "AdminOnly")]
     public class InviteMemberModel : PageModel
     {
-        private readonly InviteRepo _inviteService;
+        private readonly InviteRepo _inviteService; // Service to handle invites
 
         public InviteMemberModel(InviteRepo inviteService)
         {
@@ -18,9 +18,9 @@ namespace FileHosting.Pages.Admin
         }
 
         [BindProperty]
-        public InputModel Input { get; set; }
+        public InputModel Input { get; set; } // Bind the input model for form data
 
-        public string StatusMessage { get; set; }
+        public string StatusMessage { get; set; } // Status message to display
 
         public class InputModel
         {
@@ -34,24 +34,24 @@ namespace FileHosting.Pages.Admin
             // show empty form
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync() // Handle form submission
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Get the current user's ID
             var invitedById = 0;
-            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var parsed))
+            if (!string.IsNullOrEmpty(userIdClaim) && int.TryParse(userIdClaim, out var parsed)) // Parse it to int
                 invitedById = parsed;
 
-            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}"; // Construct base URL
 
             try
             {
-                await _inviteService.CreateAndSendInviteAsync(Input.Email, invitedById, baseUrl, TimeSpan.FromDays(7));
-                StatusMessage = $"Invitation sent to {Input.Email}.";
+                await _inviteService.CreateAndSendInviteAsync(Input.Email, invitedById, baseUrl, TimeSpan.FromDays(7)); // 7 days expiry
+                StatusMessage = $"Invitation sent to {Input.Email}."; // Success message
                 ModelState.Clear();
-                Input = new InputModel();
+                Input = new InputModel(); // Clear the form
             }
             catch (Exception ex)
             {
@@ -62,3 +62,5 @@ namespace FileHosting.Pages.Admin
         }
     }
 }
+
+

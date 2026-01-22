@@ -14,7 +14,7 @@ namespace FileHosting.Pages
         private readonly FileHostDBContext _dbContext;
         private readonly UserService _userService;
 
-        public UserOverviewModel(FileHostDBContext dbContext, UserService userService)
+        public UserOverviewModel(FileHostDBContext dbContext, UserService userService) // Inject the database context and user service
         {
 
             _dbContext = dbContext;
@@ -35,10 +35,10 @@ namespace FileHosting.Pages
         }
 
         // Deletes a user by id and redirects back to the page
-        public async Task<IActionResult> OnPostDeleteAsync([FromForm] int userId)
+        public async Task<IActionResult> OnPostDeleteAsync([FromForm] int userId) // Handle user deletion
         {
             if (userId <= 0)
-                return BadRequest();
+                return BadRequest(); // Invalid user ID
 
             var user = await _dbContext.Users.FindAsync(userId);
             if (user == null)

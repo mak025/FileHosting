@@ -14,8 +14,8 @@ namespace FileHosting.Pages.Account
             return RedirectToPage("/Index");
         }
 
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> OnPostAsync()
+        [ValidateAntiForgeryToken] // Ensure CSRF protection for POST requests
+        public async Task<IActionResult> OnPostAsync() // Handle POST requests for logout
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToPage("/Index");

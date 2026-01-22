@@ -12,9 +12,9 @@ namespace FileHostingBackend.Repos
             _dbContext = dbContext;
         }
 
-        public async Task<Union> GetOrCreateDefaultUnionAsync()
+        public async Task<Union> GetOrCreateDefaultUnionAsync() // Ensures a default union exists and returns it
         {
-            var existingUnion = await _dbContext.Union
+            var existingUnion = await _dbContext.Union // Check for existing unions
                 .OrderBy(u => u.UnionId)
                 .FirstOrDefaultAsync();
             

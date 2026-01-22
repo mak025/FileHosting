@@ -26,9 +26,9 @@ namespace FileHostingBackend.Services
             {
                 Union union;
 
-                if (unionIdFromInvite.HasValue && unionIdFromInvite.Value > 0)
+                if (unionIdFromInvite.HasValue && unionIdFromInvite.Value > 0) // Check if a valid unionId is provided
                 {
-                    union = await _dbContext.Union.FirstOrDefaultAsync(u => u.UnionId == unionIdFromInvite.Value);
+                    union = await _dbContext.Union.FirstOrDefaultAsync(u => u.UnionId == unionIdFromInvite.Value); // Try to fetch the union from the database
 
                     if (union == null)
                     {
@@ -41,7 +41,7 @@ namespace FileHostingBackend.Services
                 }
 
                 User.UserType typeEnums;
-                if (Enum.IsDefined(typeof(User.UserType), userType))
+                if (Enum.IsDefined(typeof(User.UserType), userType)) // Check if the provided userType is valid
                 {
                     typeEnums = (User.UserType)userType;
                 }
@@ -50,7 +50,7 @@ namespace FileHostingBackend.Services
                     typeEnums = User.UserType.Member;
                 }
 
-                var user = new User
+                var user = new User // Create a new User instance
                 {
                     Name = name,
                     Email = email,
@@ -74,7 +74,7 @@ namespace FileHostingBackend.Services
         }
 
 
-        public async Task DeleteUserAsync(int userId)
+        public async Task DeleteUserAsync(int userId) // Delete a user by their ID
         {
             await _userRepo.DeleteUserAsync(userId);
         }

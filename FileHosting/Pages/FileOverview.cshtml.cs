@@ -76,21 +76,21 @@ namespace FileHosting.Pages
                     .ToList();
             }
         }
-      public async Task<IActionResult> OnPostPermissionsAsync([FromForm] int fileId, [FromForm] List<int> userIds)
+      public async Task<IActionResult> OnPostPermissionsAsync([FromForm] int fileId, [FromForm] List<int> userIds) // Handle updating user permissions for a file
         {
-            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var currentUserId))
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value; // Get current user ID from claims
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out var currentUserId)) // Validate user ID
                 return Unauthorized();
 
             var currentUser = await _dbContext.Users.FirstAsync(u => u.ID == currentUserId);
 
-            var isAdmin = currentUser.Type == FileHostingBackend.Models.User.UserType.Admin
-                       || currentUser.Type == FileHostingBackend.Models.User.UserType.SysAdmin;
+            var isAdmin = currentUser.Type == FileHostingBackend.Models.User.UserType.Admin // Check if current user is admin
+                       || currentUser.Type == FileHostingBackend.Models.User.UserType.SysAdmin; // Check if current user is sysadmin
 
             if (!isAdmin)
                 return Forbid();
 
-            var file = await _dbContext.StoredFiles
+            var file = await _dbContext.StoredFiles // Retrieve the file with its current permissions
                 .Include(f => f.UsersWithPermission)
                 .FirstOrDefaultAsync(f => f.ID == fileId);
 
@@ -99,7 +99,7 @@ namespace FileHosting.Pages
 
             file.UsersWithPermission.Clear();
 
-            foreach (var userId in userIds)
+            foreach (var userId in userIds) // Update permissions based on provided user IDs
             {
                 var user = await _dbContext.Users.FindAsync(userId);
                 if (user != null)
@@ -110,15 +110,15 @@ namespace FileHosting.Pages
             return RedirectToPage();
         } 
 
-        public async Task<IActionResult> OnPostUploadAsync()
+        public async Task<IActionResult> OnPostUploadAsync() // Handle file upload
         {
-            if (Upload == null || !Upload.Any() || Upload.All(f => f == null || f.Length == 0))
+            if (Upload == null || !Upload.Any() || Upload.All(f => f == null || f.Length == 0)) // Validate uploaded files
             {
                 ModelState.AddModelError("Upload", "Venglist vel en fil");
                 return Page();
             }
 
-            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value; // Get current user ID from claims
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
                 ModelState.AddModelError("", "Bruger ikke bekræftet.");
@@ -153,27 +153,27 @@ namespace FileHosting.Pages
             return RedirectToPage();
         }
 
-        public async Task<IActionResult> OnPostSoftDeleteAsync([FromForm] string filePath)
+        public async Task<IActionResult> OnPostSoftDeleteAsync([FromForm] string filePath) // Handle soft deletion of a file
         {
             if (string.IsNullOrEmpty(filePath))
-                return BadRequest();
+                return BadRequest(); // Validate file path
 
             await _storedFileInfoService.SoftDeleteAsync(filePath);
             return RedirectToPage();
         }
 
         // Server-streaming download handler: returns FileStreamResult and prompts Save dialog
-        public async Task<IActionResult> OnGetDownloadAsync([FromQuery] string filePath)
+        public async Task<IActionResult> OnGetDownloadAsync([FromQuery] string filePath) // Handle file download
         {
             if (string.IsNullOrEmpty(filePath))
                 return BadRequest();
 
             // find stored metadata (original filename)
-            var meta = await _dbContext.StoredFiles.FirstOrDefaultAsync(f => f.FilePath == filePath);
+            var meta = await _dbContext.StoredFiles.FirstOrDefaultAsync(f => f.FilePath == filePath); // Retrieve file metadata from database
             if (meta == null)
                 return NotFound();
 
-            var (stream, contentType) = await _storedFileInfoService.GetObjectWithContentTypeAsync(filePath);
+            var (stream, contentType) = await _storedFileInfoService.GetObjectWithContentTypeAsync(filePath); // Get file stream and content type from storage service
             if (stream == null)
                 return NotFound();
 
